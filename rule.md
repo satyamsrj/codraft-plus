@@ -21,8 +21,9 @@
 - Runtime artifacts (SQLite databases, WAL logs, JSONL audit logs, `.pytest_cache`, and virtual environments) must remain ignored and excluded via `.gitignore`.
 - Every committed file must serve a distinct production, architectural, or testing purpose.
 
-## 5. Git Protocol: Push Each File Individually
-- Every modified or newly added file must be staged, committed, and pushed individually to GitHub.
+## 5. Git Protocol: User-Commanded Push Only
+- **Never** auto-commit or auto-push. Only commit and push when the user explicitly commands it.
+- When the user commands a push, stage, commit, and push each file individually — one file per commit.
 - Do not perform bulk commits combining multiple disparate files.
 - Each commit message must be atomic and descriptive, referencing the exact file and its precise technical change (e.g., `feat(storage): implement SQLite WAL-backed draft workspace`).
 - Before pushing, ensure the file is formatted, linted, and compliant with all project rules.
