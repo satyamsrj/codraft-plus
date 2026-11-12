@@ -63,6 +63,10 @@ paper_assets/
 # Model runtime & experiment caches
 stentor_tokenmonster_runtime/
 eval/*.json
+eval/*report*
+experiment_manifest.json
+*.report
+*results*
 
 
 
