@@ -44,11 +44,11 @@ flowchart TD
 
 ## Engineering Standards
 
-This repository adheres strictly to the governance and engineering rules defined in [`rule.md`](file:///C:/Users/ASUS/Desktop/codraft-plus/rule.md):
+This repository adheres strictly to professional standards:
 - **Zero Synthetic / Fake Data**: All model responses and claims must originate from real authoritative engines or explicit consensus protocols.
 - **Zero Ungrounded Assumptions**: Fail-closed semantics on service or connection unavailability.
 - **Code Cleanliness**: Self-documenting code with zero redundant commentary.
-- **Individual File Commits**: Each file is tracked and committed individually with atomic changelog messages.
+- **Individual File Commits**: Each file is tracked and committed individually with atomic changelog messages upon explicit user command.
 
 ---
 
@@ -130,7 +130,6 @@ codraft-plus/
 ├── tests/
 │   └── test_codraft.py       # Full pytest suite
 ├── .gitignore                # Git ignore rules for clean repository hygiene
-├── rule.md                   # Engineering standards, zero synthetic data, and git protocol
 ├── requirements.txt          # Python dependencies
 └── README.md                 # System overview and usage instructions
 ```

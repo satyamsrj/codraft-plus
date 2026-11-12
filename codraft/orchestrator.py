@@ -8,7 +8,7 @@ from codraft.patcher import ResilientPatcher
 from codraft.analyzer import QueryAnalyzer
 from codraft.evidence import EvidenceLedger
 from codraft.controller import AdaptiveController
-from codraft.engine import BaseEngine, OllamaEngine, OpenAIEngine
+from codraft.engine import BaseEngine, OllamaEngine, OpenAIEngine, HuggingFaceEngine
 from codraft.profiler import ResourceProfiler
 
 class CoDraftOrchestrator:
@@ -34,6 +34,8 @@ class CoDraftOrchestrator:
 
         if engine is not None:
             self.engine = engine
+        elif settings.engine_type == "huggingface":
+            self.engine = HuggingFaceEngine()
         elif settings.engine_type == "openai":
             self.engine = OpenAIEngine()
         else:

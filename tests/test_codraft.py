@@ -1,6 +1,11 @@
+import os
+import sys
 import json
 import asyncio
 from typing import List, Dict, Optional
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
 from codraft.types import PatchOperation, DraftState
 from codraft.patcher import ResilientPatcher
 from codraft.analyzer import QueryAnalyzer
@@ -9,6 +14,29 @@ from codraft.evidence import EvidenceLedger
 from codraft.controller import AdaptiveController
 from codraft.orchestrator import CoDraftOrchestrator
 from codraft.engine import BaseEngine
+from codraft.model_sets import get_model_set, MODEL_SETS
+
+def test_model_sets_registry():
+    assert "babylm" in MODEL_SETS
+    assert "pythia" in MODEL_SETS
+    assert "stentor2" in MODEL_SETS
+
+    babylm = get_model_set("babylm")
+    assert babylm.small_a.params_millions == 31.0
+    assert babylm.small_b.params_millions == 31.0
+    assert babylm.combined_small_params == 62.0
+    assert babylm.size_ratio == 2.0
+
+    pythia = get_model_set("pythia")
+    assert pythia.small_a.params_millions == 14.07
+    assert pythia.small_b.params_millions == 30.49
+    assert pythia.size_ratio == 2.0
+
+    stentor = get_model_set("stentor2")
+    assert stentor.small_a.params_millions == 12.3
+    assert stentor.small_b.params_millions == 30.4
+    assert stentor.size_ratio == 2.0
+
 
 class TestProtocolEngine(BaseEngine):
     async def chat(

@@ -1,10 +1,15 @@
 from pydantic import BaseModel, Field
+from codraft.model_sets import get_model_set
 
 class Settings(BaseModel):
-    model_a: str = Field(default="qwen2.5:3b")
-    model_b: str = Field(default="gemma3:1b")
+    active_track: str = Field(default="pythia")
+    engine_type: str = Field(default="huggingface")
+    
+    model_a: str = Field(default="")
+    model_b: str = Field(default="")
+    model_large: str = Field(default="")
+    
     ollama_base_url: str = Field(default="http://localhost:11434")
-    engine_type: str = Field(default="ollama")
     
     storage_type: str = Field(default="sqlite")
     db_path: str = Field(default="codraft_workspace.db")
@@ -23,5 +28,15 @@ class Settings(BaseModel):
 
     low_memory_threshold_gb: float = 8.0
     model_keep_alive: str = "5m"
+
+    def model_post_init(self, __context):
+        if not self.model_a or not self.model_b:
+            mset = get_model_set(self.active_track)
+            if not self.model_a:
+                self.model_a = mset.small_a.hf_id
+            if not self.model_b:
+                self.model_b = mset.small_b.hf_id
+            if not self.model_large:
+                self.model_large = mset.large.hf_id
 
 settings = Settings()

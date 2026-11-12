@@ -44,3 +44,26 @@ htmlcov/
 .idea/
 .DS_Store
 Thumbs.db
+
+# Environment files
+.env
+*.env
+.env.*
+
+# Project local rules
+rule.md
+
+# Graphify tool & knowledge graphs
+graphify-out/
+update_graphify.py
+
+# Research paper assets, visual figures, and draft tables
+paper_assets/
+
+# Model runtime & experiment caches
+stentor_tokenmonster_runtime/
+eval/*.json
+
+
+
+
