@@ -192,7 +192,15 @@
       "paper_assets/figures/fig5_token_latency_cost.png",
       "paper_assets/figures/fig5_token_latency_cost.pdf",
       "paper_assets/figures/fig6_cross_architecture_generalization.png",
-      "paper_assets/figures/fig6_cross_architecture_generalization.pdf"
+      "paper_assets/figures/fig6_cross_architecture_generalization.pdf",
+      "paper_assets/figures/fig7_set2_performance_comparison.png",
+      "paper_assets/figures/fig7_set2_performance_comparison.pdf",
+      "paper_assets/figures/fig8_set3_performance_comparison.png",
+      "paper_assets/figures/fig8_set3_performance_comparison.pdf",
+      "paper_assets/figures/fig9_common_suite_benchmarks.png",
+      "paper_assets/figures/fig9_common_suite_benchmarks.pdf",
+      "paper_assets/figures/fig10_unified_cross_track_pareto.png",
+      "paper_assets/figures/fig10_unified_cross_track_pareto.pdf"
     ],
     "tables": [
       "paper_assets/tables/table1_set1_experiments.tex",
