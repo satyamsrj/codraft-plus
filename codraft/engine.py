@@ -89,12 +89,24 @@ class HuggingFaceEngine(BaseEngine):
         self._models: Dict[str, Any] = {}
         self._tokenizers: Dict[str, Any] = {}
 
+    @staticmethod
+    def _prepare_remote_code_environment():
+        """Ensure tokenmonster and tempfile are available in sys.modules for remote-code tokenizers (Stentor2)."""
+        import sys
+        import tempfile
+        try:
+            import tokenmonster
+            sys.modules["tokenmonster"] = tokenmonster
+        except ImportError:
+            pass
+
     def _load_model(self, model_id: str):
         if model_id in self._models:
             return self._models[model_id], self._tokenizers[model_id]
 
         import torch
         from transformers import AutoModelForCausalLM, AutoTokenizer
+        self._prepare_remote_code_environment()
 
         target_device = self.device or ("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -103,10 +115,13 @@ class HuggingFaceEngine(BaseEngine):
             if tokenizer.pad_token is None:
                 tokenizer.pad_token = tokenizer.eos_token
 
+            kwargs = {"trust_remote_code": True}
+            if target_device != "cpu":
+                kwargs["torch_dtype"] = torch.float16
+
             model = AutoModelForCausalLM.from_pretrained(
                 model_id,
-                trust_remote_code=True,
-                torch_dtype=torch.float32 if target_device == "cpu" else torch.float16
+                **kwargs
             ).to(target_device)
             model.eval()
 
@@ -180,7 +195,7 @@ class HuggingFaceEngine(BaseEngine):
         input_ids = torch.tensor([full_tokens], dtype=torch.long, device=target_device)
         with torch.no_grad():
             outputs = hf_model(input_ids)
-            logits = outputs.logits
+            logits = outputs[0] if isinstance(outputs, tuple) else outputs.logits
 
         shift_logits = logits[0, :-1, :]
         shift_labels = input_ids[0, 1:]
@@ -209,8 +224,12 @@ class HuggingFaceEngine(BaseEngine):
         num_bytes = len(text.encode("utf-8"))
         input_ids = torch.tensor([tokens], dtype=torch.long, device=target_device)
         with torch.no_grad():
-            outputs = hf_model(input_ids, labels=input_ids)
-            loss_nats = float(outputs.loss.item())
+            outputs = hf_model(input_ids)
+            logits = outputs[0] if isinstance(outputs, tuple) else outputs.logits
+            shift_logits = logits[..., :-1, :].contiguous()
+            shift_labels = input_ids[..., 1:].contiguous()
+            loss_fct = torch.nn.CrossEntropyLoss()
+            loss_nats = float(loss_fct(shift_logits.view(-1, shift_logits.size(-1)), shift_labels.view(-1)).item())
 
         ppl = float(math.exp(min(loss_nats, 100.0)))
         bpb = float((loss_nats / math.log(2.0)) * (len(tokens) / max(1, num_bytes)))

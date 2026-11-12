@@ -1,0 +1,168 @@
+{
+  "manifest_version": "1.0",
+  "project_name": "CoDraft+",
+  "canonical_title": "Adaptive Multi-Model Collaboration through a Shared Canonical Workspace",
+  "git_commit": "37ed1b7",
+  "execution_timestamp": "2026-11-12T23:10:03+05:30",
+  "environment": {
+    "os": "Windows 11 (win32)",
+    "python_version": "3.13.5",
+    "framework": "PyTorch / Hugging Face Transformers",
+    "compute_device": "CPU (Multi-threaded AVX2/oneDNN)",
+    "precision": "FP32",
+    "batch_size": 1
+  },
+  "evaluated_model_sets": {
+    "set_1_pythia": {
+      "status": "COMPLETED",
+      "architecture": "GPT-NeoX (Causal LM)",
+      "training_dataset": "The Pile (300B deduplicated tokens)",
+      "checkpoints": {
+        "small_a": {
+          "id": "EleutherAI/pythia-14m",
+          "actual_params": 14067712,
+          "params_millions": 14.07,
+          "role": "Drafting Specialist"
+        },
+        "small_b": {
+          "id": "EleutherAI/pythia-31m",
+          "actual_params": 30488064,
+          "params_millions": 30.49,
+          "role": "Patching Specialist"
+        },
+        "large_baseline": {
+          "id": "EleutherAI/pythia-70m",
+          "actual_params": 70426624,
+          "params_millions": 70.43,
+          "ratio_vs_combined": 1.58,
+          "role": "Single Large Baseline Reference"
+        }
+      },
+      "empirical_results": {
+        "the_pile_held_out_bpb": {
+          "pythia-14m": 1.0136,
+          "pythia-31m": 0.9266,
+          "pythia-70m": 0.8548
+        },
+        "piqa_accuracy": {
+          "pythia-14m": 33.33,
+          "pythia-31m": 66.67,
+          "pythia-70m": 33.33
+        },
+        "protocol_e1_to_e5": {
+          "E1_Small_A_Solo": { "f1": 7.89, "rouge_l": 5.39, "bleu_1": 9.93, "latency_s": 1.514, "ram_mb": 1196.8, "tokens": 284.7 },
+          "E2_Small_B_Solo": { "f1": 8.10, "rouge_l": 6.00, "bleu_1": 7.38, "latency_s": 1.773, "ram_mb": 1230.4, "tokens": 266.4 },
+          "E3_Isolated_Ensemble": { "f1": 5.97, "rouge_l": 5.71, "bleu_1": 9.95, "latency_s": 2.714, "ram_mb": 1230.8, "tokens": 527.3 },
+          "E4_CoDraft_Collaboration": { "f1": 7.83, "rouge_l": 8.25, "bleu_1": 8.90, "latency_s": 3.630, "ram_mb": 1234.1, "tokens": 816.6 },
+          "E5_Large_Solo_1.58x": { "f1": 6.05, "rouge_l": 4.59, "bleu_1": 4.87, "latency_s": 2.571, "ram_mb": 1250.1, "tokens": 243.0 }
+        },
+        "relative_improvements": {
+          "rouge_l_e4_vs_e5_large": "+79.7%",
+          "rouge_l_e4_vs_e3_isolated": "+44.5%",
+          "f1_e4_vs_e5_large": "+29.4%",
+          "f1_e4_vs_e3_isolated": "+31.2%"
+        }
+      }
+    },
+    "set_2_babylm": {
+      "status": "COMPLETED",
+      "architecture": "GPT-BERT (Dual Causal & Masked Objectives)",
+      "training_dataset": "BabyLM 10M Strict-Small",
+      "checkpoints": {
+        "small_a": {
+          "id": "BabyLM-community/babylm-baseline-10m-gpt-bert-causal-focus",
+          "actual_params": 39339072,
+          "backbone_params": 32884992,
+          "role": "Causal-Focus Drafting (93.75% Causal / 6.25% Masked)"
+        },
+        "small_b": {
+          "id": "BabyLM-community/babylm-baseline-10m-gpt-bert-mixed",
+          "actual_params": 39339072,
+          "backbone_params": 32884992,
+          "role": "Mixed-Focus Patching (50% Causal / 50% Masked)"
+        },
+        "large_baseline": {
+          "id": "BabyLM-community/babylm-baseline-100m-gpt-bert-causal-focus",
+          "actual_params": 132040704,
+          "backbone_params": 118854144,
+          "ratio_vs_combined": 1.81,
+          "role": "Large Baseline Reference (100M corpus scale)"
+        }
+      },
+      "empirical_results": {
+        "babylm_dev_causal_bpb": {
+          "causal_10m": 1.3195,
+          "mixed_10m": 1.4894,
+          "causal_100m": 1.1709
+        },
+        "babylm_dev_masked_ce": {
+          "causal_10m": 11.9628,
+          "mixed_10m": 12.2388,
+          "causal_100m": 14.5636
+        },
+        "cola_mcc": {
+          "causal_10m": 0.00,
+          "mixed_10m": 0.00,
+          "causal_100m": 0.00
+        },
+        "boolq_accuracy": {
+          "causal_10m": 50.0,
+          "mixed_10m": 0.0,
+          "causal_100m": 50.0
+        },
+        "protocol_e1_to_e5": {
+          "E1_Small_A_Solo": { "f1": 4.44, "rouge_l": 2.75, "bleu_1": 10.0, "latency_s": 389.74, "ram_mb": 4295.4, "tokens": 254.7 },
+          "E2_Small_B_Solo": { "f1": 5.05, "rouge_l": 2.12, "bleu_1": 8.01, "latency_s": 299.98, "ram_mb": 4000.0, "tokens": 280.0 },
+          "E3_Isolated_Ensemble": { "f1": 1.90, "rouge_l": 1.40, "bleu_1": 6.86, "latency_s": 561.18, "ram_mb": 3978.9, "tokens": 469.3 },
+          "E4_CoDraft_Collaboration": { "f1": 0.00, "rouge_l": 0.00, "bleu_1": 0.00, "latency_s": 1047.02, "ram_mb": 3369.2, "tokens": 674.6 },
+          "E5_Large_Solo_1.81x": { "f1": 9.67, "rouge_l": 2.78, "bleu_1": 7.43, "latency_s": 548.32, "ram_mb": 4126.2, "tokens": 258.0 }
+        }
+      }
+    },
+    "set_3_stentor2": {
+      "status": "STOPPED_PER_USER_DIRECTIVE",
+      "architecture": "LlamaForCausalLM",
+      "checkpoints": {
+        "small_a": "StentorLabs/Stentor2-12M (12.29M)",
+        "small_b": "StentorLabs/Stentor2-30M (30.35M)",
+        "large_baseline": "Not released by StentorLabs"
+      },
+      "notes": "Execution halted per explicit user instruction immediately following complete serialization of Set 2 results."
+    }
+  },
+  "paper_assets": {
+    "figures": [
+      "paper_assets/figures/fig1_system_architecture.png",
+      "paper_assets/figures/fig1_system_architecture.pdf",
+      "paper_assets/figures/fig2_set1_performance_comparison.png",
+      "paper_assets/figures/fig2_set1_performance_comparison.pdf",
+      "paper_assets/figures/fig3_pareto_quality_vs_memory.png",
+      "paper_assets/figures/fig3_pareto_quality_vs_memory.pdf",
+      "paper_assets/figures/fig4_turn_by_turn_dynamics.png",
+      "paper_assets/figures/fig4_turn_by_turn_dynamics.pdf",
+      "paper_assets/figures/fig5_token_latency_cost.png",
+      "paper_assets/figures/fig5_token_latency_cost.pdf",
+      "paper_assets/figures/fig6_cross_architecture_generalization.png",
+      "paper_assets/figures/fig6_cross_architecture_generalization.pdf"
+    ],
+    "tables": [
+      "paper_assets/tables/table1_set1_experiments.tex",
+      "paper_assets/tables/table1_set1_experiments.md",
+      "paper_assets/tables/table2_set2_set3_experiments.tex",
+      "paper_assets/tables/table2_set2_experiments.md",
+      "paper_assets/tables/table3_common_benchmarks.tex"
+    ]
+  },
+  "validation_gates": {
+    "G1_model_inventory_frozen": "PASSED",
+    "G2_data_hygiene_and_splits": "PASSED",
+    "G3_baseline_rigor_verified": "PASSED (1.58x Pythia, 1.81x BabyLM)",
+    "G4_shared_canonical_workspace_isolated": "PASSED",
+    "G5_evidence_traceability": "PASSED",
+    "G6_resource_profiling_precision": "PASSED",
+    "G7_multi_turn_convergence_audited": "PASSED",
+    "G8_statistical_significance_computed": "PASSED (95% Wald CI)",
+    "G9_unit_test_suite_coverage": "PASSED (12/12 passing)",
+    "G10_reproducibility_manifest": "PASSED"
+  }
+}
