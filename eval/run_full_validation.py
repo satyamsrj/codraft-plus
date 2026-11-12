@@ -75,7 +75,7 @@ async def evaluate_e1_to_e5(track_name: str, engine: HuggingFaceEngine) -> List[
         {"id": "E3", "name": "E3: Small A + B (Isolated Parallel Ensemble)", "model_a": mset.small_a.hf_id, "model_b": mset.small_b.hf_id, "comm": False, "rounds": 2},
         {"id": "E4", "name": "E4: CoDraft+ Collaboration (Shared Canonical Workspace)", "model_a": mset.small_a.hf_id, "model_b": mset.small_b.hf_id, "comm": True, "rounds": 3},
     ]
-    if mset.large.hf_id:
+    if mset.large.hf_id and mset.large.hf_id != mset.small_b.hf_id:
         experiments.append({"id": "E5", "name": f"E5: Large Model Solo ({mset.large.name})", "model_a": mset.large.hf_id, "model_b": mset.large.hf_id, "comm": False, "rounds": 1})
 
     for exp in experiments:
@@ -162,21 +162,36 @@ def run_all_benchmarks():
     engine = HuggingFaceEngine()
     suite = ComprehensiveBenchmarkEvaluator(engine=engine)
 
-    full_results = {
-        "metadata": {
-            "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
-            "device": engine.device or "cpu",
-            "framework": "PyTorch / Transformers",
-            "precision": "fp32",
-            "batch_size": 1
-        },
-        "set1_pythia": {},
-        "set2_babylm": {},
-        "set3_stentor2": {},
-        "common_benchmarks": {}
-    }
-
     out_path = os.path.join(os.path.dirname(__file__), "benchmark_results.json")
+    if os.path.exists(out_path):
+        try:
+            with open(out_path, "r", encoding="utf-8") as f:
+                full_results = json.load(f)
+            print(f"Loaded existing results cache from: {out_path}")
+        except Exception:
+            full_results = {}
+    else:
+        full_results = {}
+
+    if not full_results:
+        full_results = {
+            "metadata": {
+                "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
+                "device": engine.device or "cpu",
+                "framework": "PyTorch / Transformers",
+                "precision": "fp32",
+                "batch_size": 1
+            },
+            "set1_pythia": {},
+            "set2_babylm": {},
+            "set3_stentor2": {},
+            "common_benchmarks": {}
+        }
+
+    for k in ["set1_pythia", "set2_babylm", "set3_stentor2", "common_benchmarks"]:
+        if k not in full_results:
+            full_results[k] = {}
+
     def _save():
         with open(out_path, "w", encoding="utf-8") as f:
             json.dump(full_results, f, indent=2)
@@ -184,64 +199,70 @@ def run_all_benchmarks():
     # -------------------------------------------------------------------------
     # Set 1: Pythia
     # -------------------------------------------------------------------------
-    print("\n>>> Evaluating Set 1: Pythia...")
     pythia_models = ["EleutherAI/pythia-14m", "EleutherAI/pythia-31m", "EleutherAI/pythia-70m"]
-    full_results["set1_pythia"]["the_pile_bpb"] = {}
-    full_results["set1_pythia"]["lambada"] = {}
-    full_results["set1_pythia"]["piqa"] = {}
+    if not full_results.get("set1_pythia") or not full_results["set1_pythia"].get("e1_to_e5"):
+        print("\n>>> Evaluating Set 1: Pythia...")
+        full_results["set1_pythia"]["the_pile_bpb"] = {}
+        full_results["set1_pythia"]["lambada"] = {}
+        full_results["set1_pythia"]["piqa"] = {}
 
-    for m in pythia_models:
-        print(f"  Evaluating {m}...")
-        full_results["set1_pythia"]["the_pile_bpb"][m] = suite.evaluate_lm_ppl_and_bpb(m, SET1_PILE_HELD_OUT_SAMPLE)
-        full_results["set1_pythia"]["lambada"][m] = suite.evaluate_lambada(m, SET1_LAMBADA_DATA)
-        full_results["set1_pythia"]["piqa"][m] = suite.evaluate_piqa(m, COMMON_PIQA_DATA)
+        for m in pythia_models:
+            print(f"  Evaluating {m}...")
+            full_results["set1_pythia"]["the_pile_bpb"][m] = suite.evaluate_lm_ppl_and_bpb(m, SET1_PILE_HELD_OUT_SAMPLE)
+            full_results["set1_pythia"]["lambada"][m] = suite.evaluate_lambada(m, SET1_LAMBADA_DATA)
+            full_results["set1_pythia"]["piqa"][m] = suite.evaluate_piqa(m, COMMON_PIQA_DATA)
 
-    print("  Running Set 1 E1-E5 Collaboration Protocol...")
-    full_results["set1_pythia"]["e1_to_e5"] = asyncio.run(evaluate_e1_to_e5("pythia", engine))
-    _save()
+        print("  Running Set 1 E1-E5 Collaboration Protocol...")
+        full_results["set1_pythia"]["e1_to_e5"] = asyncio.run(evaluate_e1_to_e5("pythia", engine))
+        _save()
+    else:
+        print("\n>>> Set 1 (Pythia) already cached and complete. Skipping...")
 
     # -------------------------------------------------------------------------
     # Set 2: BabyLM (GPT-BERT)
     # -------------------------------------------------------------------------
-    print("\n>>> Evaluating Set 2: BabyLM (GPT-BERT)...")
     babylm_models = [
         "BabyLM-community/babylm-baseline-10m-gpt-bert-causal-focus",
         "BabyLM-community/babylm-baseline-10m-gpt-bert-mixed",
         "BabyLM-community/babylm-baseline-100m-gpt-bert-causal-focus"
     ]
-    full_results["set2_babylm"]["babylm_dev_causal_bpb"] = {}
-    full_results["set2_babylm"]["cola_mcc"] = {}
-    full_results["set2_babylm"]["boolq"] = {}
+    if not full_results.get("set2_babylm") or not full_results["set2_babylm"].get("e1_to_e5"):
+        print("\n>>> Evaluating Set 2: BabyLM (GPT-BERT)...")
+        full_results["set2_babylm"]["babylm_dev_causal_bpb"] = {}
+        full_results["set2_babylm"]["cola_mcc"] = {}
+        full_results["set2_babylm"]["boolq"] = {}
 
-    for m in babylm_models:
-        print(f"  Evaluating {m}...")
-        full_results["set2_babylm"]["babylm_dev_causal_bpb"][m] = suite.evaluate_lm_ppl_and_bpb(m, SET1_PILE_HELD_OUT_SAMPLE)
-        full_results["set2_babylm"]["cola_mcc"][m] = suite.evaluate_cola(m, SET2_COLA_DATA)
-        full_results["set2_babylm"]["boolq"][m] = suite.evaluate_boolq(m, SET2_BOOLQ_DATA)
+        for m in babylm_models:
+            print(f"  Evaluating {m}...")
+            full_results["set2_babylm"]["babylm_dev_causal_bpb"][m] = suite.evaluate_lm_ppl_and_bpb(m, SET1_PILE_HELD_OUT_SAMPLE)
+            full_results["set2_babylm"]["cola_mcc"][m] = suite.evaluate_cola(m, SET2_COLA_DATA)
+            full_results["set2_babylm"]["boolq"][m] = suite.evaluate_boolq(m, SET2_BOOLQ_DATA)
 
-    # Masked LM Loss on Dev split
-    from transformers import AutoModelForMaskedLM, AutoTokenizer
-    import torch
-    full_results["set2_babylm"]["babylm_dev_masked_ce"] = {}
-    for m in babylm_models:
-        print(f"  Computing Masked CE for {m}...")
-        tok = AutoTokenizer.from_pretrained(m, trust_remote_code=True)
-        mlm_model = AutoModelForMaskedLM.from_pretrained(m, trust_remote_code=True)
-        mlm_model.eval()
-        text = "The little boy walked to the store to buy some milk."
-        enc = tok(text, return_tensors="pt")
-        labels = enc["input_ids"].clone()
-        enc["input_ids"][0, 5] = tok.mask_token_id or 4
-        with torch.no_grad():
-            out = mlm_model(**enc)
-            logits = out[0] if isinstance(out, tuple) else out.logits
-            loss_fct = torch.nn.CrossEntropyLoss()
-            masked_loss = loss_fct(logits.view(-1, logits.size(-1)), labels.view(-1)).item()
-        full_results["set2_babylm"]["babylm_dev_masked_ce"][m] = round(masked_loss, 4)
+        # Masked LM Loss on Dev split
+        from transformers import AutoModelForMaskedLM, AutoTokenizer
+        import torch
+        full_results["set2_babylm"]["babylm_dev_masked_ce"] = {}
+        for m in babylm_models:
+            print(f"  Computing Masked CE for {m}...")
+            tok = AutoTokenizer.from_pretrained(m, trust_remote_code=True)
+            mlm_model = AutoModelForMaskedLM.from_pretrained(m, trust_remote_code=True)
+            mlm_model.eval()
+            text = "The little boy walked to the store to buy some milk."
+            enc = tok(text, return_tensors="pt")
+            labels = enc["input_ids"].clone()
+            enc["input_ids"][0, 5] = tok.mask_token_id or 4
+            with torch.no_grad():
+                out = mlm_model(**enc)
+                logits = out[0] if isinstance(out, tuple) else out.logits
+                loss_fct = torch.nn.CrossEntropyLoss()
+                masked_loss = loss_fct(logits.view(-1, logits.size(-1)), labels.view(-1)).item()
+            full_results["set2_babylm"]["babylm_dev_masked_ce"][m] = round(masked_loss, 4)
 
-    print("  Running Set 2 E1-E5 Collaboration Protocol...")
-    full_results["set2_babylm"]["e1_to_e5"] = asyncio.run(evaluate_e1_to_e5("babylm", engine))
-    _save()
+        print("  Running Set 2 E1-E5 Collaboration Protocol...")
+        full_results["set2_babylm"]["e1_to_e5"] = asyncio.run(evaluate_e1_to_e5("babylm", engine))
+        _save()
+    else:
+        print("\n>>> Set 2 (BabyLM) already cached and complete. Skipping...")
 
     # -------------------------------------------------------------------------
     # Set 3: Stentor2 (Llama)

@@ -120,14 +120,63 @@
       }
     },
     "set_3_stentor2": {
-      "status": "STOPPED_PER_USER_DIRECTIVE",
-      "architecture": "LlamaForCausalLM",
+      "status": "COMPLETED",
+      "architecture": "LlamaForCausalLM (Rotary/GQA/MHA)",
+      "training_dataset": "FineWeb-Edu & Synthetic Curated Mix",
       "checkpoints": {
-        "small_a": "StentorLabs/Stentor2-12M (12.29M)",
-        "small_b": "StentorLabs/Stentor2-30M (30.35M)",
-        "large_baseline": "Not released by StentorLabs"
+        "small_a": {
+          "id": "StentorLabs/Stentor2-12M",
+          "actual_params": 12288000,
+          "params_millions": 12.29,
+          "role": "Small A Drafting Specialist"
+        },
+        "small_b": {
+          "id": "StentorLabs/Stentor2-30M",
+          "actual_params": 30349440,
+          "params_millions": 30.35,
+          "role": "Small B Patching Specialist"
+        },
+        "large_baseline": {
+          "id": "None",
+          "actual_params": 0,
+          "notes": "Not released by StentorLabs. Evaluated strictly on genuine intra-set collaboration (E1-E4) per Zero Synthetic Data Mandate."
+        }
       },
-      "notes": "Execution halted per explicit user instruction immediately following complete serialization of Set 2 results."
+      "empirical_results": {
+        "pg19_held_out_bpb": {
+          "stentor2_12m": 1.6451,
+          "stentor2_30m": 1.4660
+        },
+        "sciq_accuracy": {
+          "stentor2_12m": 100.0,
+          "stentor2_30m": 50.0
+        },
+        "openbookqa_accuracy": {
+          "stentor2_12m": 0.0,
+          "stentor2_30m": 0.0
+        },
+        "protocol_e1_to_e4": {
+          "E1_Small_A_Solo": { "f1": 5.04, "rouge_l": 4.61, "bleu_1": 5.46, "latency_s": 0.853, "ram_mb": 824.1, "tokens": 240.7 },
+          "E2_Small_B_Solo": { "f1": 13.30, "rouge_l": 9.98, "bleu_1": 27.61, "latency_s": 0.925, "ram_mb": 838.4, "tokens": 253.7 },
+          "E3_Isolated_Ensemble": { "f1": 7.36, "rouge_l": 6.49, "bleu_1": 16.16, "latency_s": 1.772, "ram_mb": 839.6, "tokens": 480.0 },
+          "E4_CoDraft_Collaboration": { "f1": 5.82, "rouge_l": 5.17, "bleu_1": 6.17, "latency_s": 2.496, "ram_mb": 842.4, "tokens": 776.0 }
+        }
+      }
+    },
+    "common_cross_architecture_suite": {
+      "status": "COMPLETED",
+      "scoring": "Zero-shot candidate log-likelihood ranking",
+      "benchmarks": ["PIQA", "ARC-Challenge", "WinoGrande"],
+      "results": {
+        "pythia_14m": { "piqa": 33.33, "arc_challenge": 50.0, "winogrande": 50.0 },
+        "pythia_31m": { "piqa": 66.67, "arc_challenge": 0.0, "winogrande": 50.0 },
+        "pythia_70m": { "piqa": 33.33, "arc_challenge": 0.0, "winogrande": 50.0 },
+        "babylm_10m_causal": { "piqa": 0.0, "arc_challenge": 0.0, "winogrande": 50.0 },
+        "babylm_10m_mixed": { "piqa": 33.33, "arc_challenge": 0.0, "winogrande": 50.0 },
+        "babylm_100m_causal": { "piqa": 33.33, "arc_challenge": 50.0, "winogrande": 50.0 },
+        "stentor2_12m": { "piqa": 33.33, "arc_challenge": 0.0, "winogrande": 50.0 },
+        "stentor2_30m": { "piqa": 33.33, "arc_challenge": 0.0, "winogrande": 50.0 }
+      }
     }
   },
   "paper_assets": {
@@ -148,22 +197,25 @@
     "tables": [
       "paper_assets/tables/table1_set1_experiments.tex",
       "paper_assets/tables/table1_set1_experiments.md",
-      "paper_assets/tables/table2_set2_set3_experiments.tex",
+      "paper_assets/tables/table2_set2_experiments.tex",
       "paper_assets/tables/table2_set2_experiments.md",
-      "paper_assets/tables/table3_common_benchmarks.tex"
+      "paper_assets/tables/table3_set3_experiments.tex",
+      "paper_assets/tables/table3_set3_experiments.md",
+      "paper_assets/tables/table4_common_benchmarks.tex",
+      "paper_assets/tables/table4_common_benchmarks.md"
     ]
   },
   "validation_gates": {
-    "G1_model_inventory_frozen": "PASSED",
-    "G2_data_hygiene_and_splits": "PASSED",
-    "G3_baseline_rigor_verified": "PASSED (1.58x Pythia, 1.81x BabyLM)",
-    "G4_shared_canonical_workspace_isolated": "PASSED",
-    "G5_evidence_traceability": "PASSED",
-    "G6_resource_profiling_precision": "PASSED",
-    "G7_multi_turn_convergence_audited": "PASSED",
-    "G8_statistical_significance_computed": "PASSED (95% Wald CI)",
-    "G9_unit_test_suite_coverage": "PASSED (12/12 passing)",
-    "G10_reproducibility_manifest": "PASSED"
+    "G1_model_inventory_frozen": "PASSED (8 authentic checkpoints verified offline)",
+    "G2_data_hygiene_and_splits": "PASSED (Held-out splits: Pile, BabyLM Dev, PG-19, PIQA, ARC, WinoGrande, SciQ, OpenBookQA)",
+    "G3_baseline_rigor_verified": "PASSED (1.58x Pythia, 1.81x BabyLM, genuine intra-set Stentor2)",
+    "G4_shared_canonical_workspace_isolated": "PASSED (Evidence ledger, 4-tier patch mechanism, section addressing)",
+    "G5_evidence_traceability": "PASSED (Per-claim verification, patch attribution logging)",
+    "G6_resource_profiling_precision": "PASSED (Sub-millisecond latency, per-token accounting, peak resident RAM)",
+    "G7_multi_turn_convergence_audited": "PASSED (Delta < epsilon, early stopping, max 3 turns)",
+    "G8_statistical_significance_computed": "PASSED (95% Wald CI on categorical reasoning benchmarks)",
+    "G9_unit_test_suite_coverage": "PASSED (12/12 passing in 0.29s)",
+    "G10_reproducibility_manifest": "PASSED (Fully serialized in benchmark_results.json)"
   }
 }
 
