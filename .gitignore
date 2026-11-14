@@ -59,6 +59,9 @@ update_graphify.py
 
 # Research paper assets, visual figures, and draft tables
 paper_assets/
+*generate*figure*
+*generate_paper_figures*
+figures/
 
 # Model runtime & experiment caches
 stentor_tokenmonster_runtime/
