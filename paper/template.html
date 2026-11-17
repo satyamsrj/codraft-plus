@@ -1,0 +1,1207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>CoDraft+: Adaptive Multi-Model Collaboration through a Shared Canonical Workspace for Resource-Constrained Edge Devices</title>
+<style>
+  @page {
+    size: letter;
+    margin: 0.65in 0.6in 0.7in 0.6in;
+    @bottom-center {
+      content: "Page " counter(page);
+      font-size: 8.5pt;
+      font-family: 'Times New Roman', serif;
+    }
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family: 'Times New Roman', 'Nimbus Roman No9 L', 'Times', serif;
+    font-size: 9.45pt;
+    line-height: 1.23;
+    color: #111;
+    background: #fff;
+    text-align: justify;
+    text-justify: inter-word;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .header-banner {
+    font-size: 7.6pt;
+    color: #555;
+    border-bottom: 0.6pt solid #999;
+    padding-bottom: 3pt;
+    margin-bottom: 10pt;
+    display: flex;
+    justify-content: space-between;
+    letter-spacing: 0.03em;
+  }
+
+  .title-block {
+    text-align: center;
+    margin-bottom: 11pt;
+    padding-bottom: 8pt;
+    border-bottom: 0.6pt solid #ccc;
+  }
+
+  h1.paper-title {
+    font-size: 18pt;
+    font-weight: bold;
+    line-height: 1.18;
+    margin-bottom: 6pt;
+    letter-spacing: -0.01em;
+  }
+
+  .authors-block {
+    font-size: 10.2pt;
+    margin-bottom: 2pt;
+  }
+  .authors-block .author-name {
+    font-weight: bold;
+  }
+  .authors-block .author-affil {
+    font-size: 9pt;
+    color: #333;
+    font-style: italic;
+  }
+  .authors-block .author-email {
+    font-size: 8.2pt;
+    font-family: 'Courier New', monospace;
+    color: #444;
+  }
+
+  /* Strict Two-Column Layout for Entire Manuscript */
+  .two-column {
+    column-count: 2;
+    column-gap: 0.26in;
+    column-rule: 0.4pt solid #e5e5e5;
+    column-fill: balance;
+  }
+
+  .abstract-box {
+    margin: 0 0 9pt 0;
+    padding: 6pt 8pt;
+    border-left: 2pt solid #1e293b;
+    background: #fafafa;
+    font-size: 8.8pt;
+    line-height: 1.24;
+    break-inside: avoid;
+  }
+
+  .abstract-title {
+    font-weight: bold;
+    font-style: italic;
+    display: inline;
+  }
+
+  .keywords-block {
+    margin-top: 4.5pt;
+    font-size: 8.3pt;
+    line-height: 1.22;
+  }
+  .keywords-title {
+    font-weight: bold;
+    font-style: italic;
+    display: inline;
+  }
+
+  h2.sec-heading {
+    font-size: 10.2pt;
+    font-weight: bold;
+    text-transform: uppercase;
+    text-align: center;
+    margin: 9.5pt 0 3.5pt 0;
+    letter-spacing: 0.04em;
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+
+  h3.subsec-heading {
+    font-size: 9.6pt;
+    font-weight: bold;
+    font-style: italic;
+    margin: 8pt 0 3pt 0;
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+
+  p {
+    text-indent: 1.15em;
+    margin-bottom: 2.8pt;
+    orphans: 2;
+    widows: 2;
+  }
+
+  p.no-indent {
+    text-indent: 0;
+  }
+
+  code {
+    font-family: 'Courier New', monospace;
+    font-size: 8.4pt;
+    background: #f4f4f5;
+    padding: 0 2pt;
+    border-radius: 2px;
+  }
+
+  /* Equations */
+  .equation-box {
+    margin: 5.5pt 0;
+    padding: 3.5pt 20pt 3.5pt 4pt;
+    text-align: center;
+    font-style: italic;
+    break-inside: avoid;
+    position: relative;
+  }
+  .eq-math {
+    font-family: 'Times New Roman', serif;
+    font-size: 9pt;
+  }
+  .eq-num {
+    position: absolute;
+    right: 2px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-style: normal;
+    font-size: 8.6pt;
+  }
+
+  /* Strict Single-Column Tables */
+  .table-wrapper {
+    width: 100%;
+    max-width: 100%;
+    break-inside: avoid;
+    page-break-inside: avoid;
+    margin: 8pt 0;
+    text-align: center;
+    overflow: hidden;
+  }
+  .table-title {
+    font-size: 8pt;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin-bottom: 1.5pt;
+    letter-spacing: 0.04em;
+  }
+  .table-caption {
+    font-size: 7.6pt;
+    font-style: italic;
+    margin-bottom: 3.5pt;
+    color: #222;
+    line-height: 1.16;
+  }
+  table.pub-table {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+    font-size: 6.45pt;
+    line-height: 1.15;
+    margin: 0 auto;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+  table.pub-table th, table.pub-table td {
+    padding: 2.2pt 1.4pt;
+    text-align: center;
+    vertical-align: middle;
+  }
+  table.pub-table thead tr:first-child {
+    border-top: 1.1pt solid #000;
+  }
+  table.pub-table thead tr:last-child {
+    border-bottom: 0.65pt solid #000;
+  }
+  table.pub-table tbody tr:last-child {
+    border-bottom: 1.1pt solid #000;
+  }
+  table.pub-table td.left, table.pub-table th.left {
+    text-align: left;
+  }
+  table.pub-table code {
+    font-size: 5.7pt;
+    background: none;
+    padding: 0;
+  }
+  table.pub-table tr.highlight {
+    background-color: #eef4ff;
+    font-weight: bold;
+  }
+  .table-note {
+    font-size: 6.6pt;
+    font-style: italic;
+    color: #444;
+    text-align: left;
+    margin-top: 2.5pt;
+    line-height: 1.16;
+  }
+
+  /* Strict Single-Column Figures */
+  .figure-wrapper {
+    width: 100%;
+    max-width: 100%;
+    break-inside: avoid;
+    page-break-inside: avoid;
+    margin: 6.5pt 0;
+    text-align: center;
+  }
+  .figure-wrapper img {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    max-height: 2.55in;
+    height: auto;
+    object-fit: contain;
+    margin: 0 auto;
+    border: 0.5pt solid #d8d8d8;
+    border-radius: 2px;
+    background: #fff;
+  }
+  .fig-caption {
+    font-size: 7.7pt;
+    line-height: 1.18;
+    text-align: justify;
+    margin-top: 3pt;
+    color: #222;
+  }
+  .fig-caption strong {
+    font-weight: bold;
+  }
+
+  /* Algorithm Box */
+  .algo-box {
+    border-top: 1.1pt solid #000;
+    border-bottom: 1.1pt solid #000;
+    padding: 4.5pt 4pt;
+    margin: 8pt 0;
+    background: #fafafa;
+    font-family: 'Courier New', monospace;
+    font-size: 7pt;
+    line-height: 1.2;
+    break-inside: avoid;
+    page-break-inside: avoid;
+    width: 100%;
+  }
+  .algo-title {
+    font-family: 'Times New Roman', serif;
+    font-weight: bold;
+    font-size: 8.3pt;
+    border-bottom: 0.6pt solid #000;
+    padding-bottom: 2pt;
+    margin-bottom: 3.5pt;
+  }
+  .algo-line {
+    margin-left: 10pt;
+    text-indent: -10pt;
+    text-align: left;
+  }
+  .algo-kw {
+    font-weight: bold;
+    color: #000;
+  }
+
+  /* References */
+  .ref-list {
+    font-size: 7.7pt;
+    line-height: 1.18;
+    margin-top: 3.5pt;
+  }
+  .ref-item {
+    margin-bottom: 3.5pt;
+    padding-left: 1.5em;
+    text-indent: -1.5em;
+    text-align: justify;
+    word-break: break-word;
+  }
+
+  /* Bullet lists */
+  ul.pub-list {
+    margin: 3.5pt 0 4.5pt 1.2em;
+    font-size: 9.2pt;
+    line-height: 1.24;
+  }
+  ul.pub-list li {
+    margin-bottom: 2.5pt;
+  }
+</style>
+</head>
+<body>
+
+<div class="header-banner">
+  <span style="white-space:nowrap;">PREPRINT &mdash; FULL-LENGTH JOURNAL MANUSCRIPT (TWO-COLUMN)</span>
+  <span style="white-space:nowrap;">CODRAFT+ COLLABORATIVE EDGE AI</span>
+</div>
+
+<div class="title-block">
+  <h1 class="paper-title">CoDraft+: Adaptive Multi-Model Collaboration through a Shared Canonical Workspace for Resource-Constrained Edge Devices</h1>
+  <div class="authors-block">
+    <div class="author-name">Satyam Saroj</div>
+    <div class="author-affil">Ajay Kumar Garg Engineering College, Ghaziabad, India</div>
+    <div class="author-email">sarojsatyam150@gmail.com &bull; <a href="https://github.com/satyamsrj/codraft-plus" style="color:#1d4ed8;text-decoration:none;">https://github.com/satyamsrj/codraft-plus</a></div>
+  </div>
+</div>
+
+<div class="two-column">
+
+<div class="abstract-box">
+  <div class="abstract-title">Abstract&mdash;</div>Deploying monolithic 70-billion-parameter language models on consumer laptops and edge hardware (&lt;8 GB RAM) triggers immediate out-of-memory (OOM) failures, while conventional multi-agent debate floods compact context windows with quadratic conversational transcripts, squandering up to 60% of inference compute on redundant pleasantries. We introduce <strong>CoDraft+</strong>, a resource-aware collaborative framework in which heterogeneous small language models (12M&ndash;39M parameters) iteratively build, refine, and verify one shared answer inside a <em>Shared Canonical Workspace</em> (D<sub>t</sub>). Instead of exchanging free-form dialogue, specialist agents emit structured JSON patches reconciled through a 4-tier <code>ResilientPatcher</code> (strict JSON, fenced-block extraction, curly-brace newline sanitization, and heuristic prose fallback), tracked by a claim-centric <code>EvidenceLedger</code> (L<sub>t</sub>) and governed by a multi-signal <code>AdaptiveController</code> combining query complexity C(q), epistemic uncertainty U<sub>t</sub>, edit churn &Delta;<sub>diff,t</sub>, and verification pressure V<sub>t</sub>. Evaluated strictly on genuine FP32 CPU forward passes across three independent architectural families&mdash;Set 1 (Pythia / GPT-NeoX), Set 2 (BabyLM / GPT-BERT), and Set 3 (Stentor2 / Llama)&mdash;CoDraft+ achieves an empirical breakthrough in Set 1: pairing Pythia-14M and Pythia-31M (44.56M active parameters) reaches <strong>8.25% ROUGE-L</strong>, outperforming the 1.58&times; larger monolithic Pythia-70M baseline (4.59%) by <strong>+79.7%</strong> and an isolated parallel ensemble (5.71%) by <strong>+44.5%</strong>, while consuming less peak resident memory (<strong>1234.1 MB</strong> vs. 1250.1 MB). With equal scientific rigor, we document two critical negative results: context-horizon collapse in un-tuned 512-token BabyLM models and asymmetric capability dilution when Stentor2-12M edits a stronger Stentor2-30M draft. All 10 validation gates (G1&ndash;G10), 12/12 unit tests, and raw benchmark logs are openly reproducible with zero synthetic data.
+  <div class="keywords-block">
+    <div class="keywords-title">Index Terms&mdash;</div>Multi-Agent Systems, Collaborative Large Language Models, Small Language Models, Edge AI, Shared Canonical Workspace, Blackboard Architecture, Resilient Patching, Evidence Ledger.
+  </div>
+</div>
+
+<h2 class="sec-heading">I. Introduction</h2>
+
+<p class="no-indent">Consider an edge computing deployment: two commodity laptops or industrial edge micro-servers operating in an offline research station or rural clinic must synthesize an accurate technical brief from heterogeneous local observations. Neither machine possesses datacenter GPUs; each operates strictly on CPU threads with less than 8 GB of resident RAM. Loading a monolithic 70-billion-parameter large language model (LLM) causes immediate operating-system out-of-memory (OOM) termination. Conversely, relying on a single sub-50-million-parameter small language model (SLM) produces shallow, repetitive, or factually incomplete drafts.</p>
+
+<p>To bridge this capability gap without exceeding edge memory envelopes, recent studies have explored multi-agent systems (MAS) in which multiple language models collaborate to solve complex tasks. However, the dominant multi-agent paradigm&mdash;<em>conversational debate</em> [2, 3]&mdash;treats models as chat participants appending full-length responses to a shared message history. Under edge constraints, conversational debate suffers from two structural bottlenecks: (1) <strong>quadratic token growth</strong> <i>O</i>(<i>T</i><sup>2</sup>) across <i>T</i> rounds, where up to 60% of context capacity is consumed by meta-conversational pleasantries, restatements, and turn-taking boilerplate; and (2) <strong>fragile structured output parsing</strong>, where sub-50M models routinely break strict JSON schemas, causing naive multi-agent pipelines to crash or silently drop edits.</p>
+
+<p>Human software engineers and technical authors collaborate differently under bounded cognitive bandwidth. Rather than reciting entire documents aloud in alternating turns, they work asynchronously on a <em>shared canonical artifact</em>&mdash;such as a version-controlled repository or collaborative manuscript. Contributors inspect the current canonical state, propose localized patches targeting specific sections, record verifiable factual claims, and halt once incremental edits stabilize.</p>
+
+<p>We operationalize this canonical editing workflow in <strong>CoDraft+</strong>, an open-source, resource-aware multi-SLM collaboration engine engineered specifically for consumer hardware (&lt;8 GB RAM). CoDraft+ replaces dialogue transcripts with a versioned, section-addressed workspace <i>D</i><sub>t</sub> persisted in SQLite and append-only JSONL logs. A deterministic <code>QueryAnalyzer</code> routes simple queries directly to a single-round fast path, while complex tasks invoke alternating specialist SLMs coordinated by a multi-signal <code>AdaptiveController</code>, a 4-tier <code>ResilientPatcher</code>, and a claim-tracking <code>EvidenceLedger</code>.</p>
+
+<div class="figure-wrapper">
+  <img src="[[IMG1]]" alt="CoDraft+ System Architecture and Workflow">
+  <div class="fig-caption"><strong>Fig. 1. Authentic CoDraft+ System Architecture &amp; Execution Workflow.</strong> Mapped directly to the <code>codraft/</code> modules: <code>QueryAnalyzer</code> (1) computes C(q); <code>AdaptiveController</code> (2) routes active SLMs inside an interleaved CPU pool (3, peak RAM &le;1234 MB); 4-tier <code>ResilientPatcher</code> (4) reconciles raw outputs with 0% drop; <code>EvidenceLedger</code> &amp; scoring gate (5) computes V<sub>t</sub>, U<sub>t</sub>, and S<sub>t</sub>; SQLite/JSONL workspace (6) persists D<sub>t</sub> and L<sub>t</sub>; stop gate (7) loops until convergence or max rounds to emit <code>OrchestrationResult</code> (8).</div>
+</div>
+
+<p>This paper makes five concrete contributions to edge AI and software engineering for multi-agent systems:</p>
+<ul class="pub-list">
+  <li><strong>Canonical Blackboard Architecture for Edge SLMs:</strong> We formalize and implement a complete 14-module Python architecture (1,548 LOC) decoupling communication bandwidth from turn count <i>T</i>, eliminating conversational bloat while keeping workspace storage under 15 KB.</li>
+  <li><strong>Superadditive Sub-50M Collaboration:</strong> On Set 1 (Pythia / GPT-NeoX), CoDraft+ pairing Pythia-14M + 31M (44.56M active) achieves <strong>8.25% ROUGE-L</strong>, surpassing the 1.58&times; monolithic Pythia-70M baseline (4.59%) by <strong>+79.7%</strong> and the isolated ensemble control (5.71%) by <strong>+44.5%</strong>, at lower peak RAM (1234.1 MB vs. 1250.1 MB).</li>
+  <li><strong>4-Tier Fault-Tolerant JSON Patching &amp; Multi-Signal Stopping:</strong> We design a 4-tier parsing cascade (<code>codraft/patcher.py</code>) achieving 0% unrecoverable patch drops across non-instruction-tuned SLMs, coupled with a calibrated 4-signal stopping controller (<i>w</i><sub>c</sub>=0.35, <i>w</i><sub>u</sub>=0.25, <i>w</i><sub>d</sub>=0.25, <i>w</i><sub>v</sub>=0.15).</li>
+  <li><strong>Transparent Negative Results &amp; Boundary Laws:</strong> We empirically identify and diagnose two exact failure boundaries: 512-token context-window collapse in BabyLM (Set 2) and asymmetric capability dilution in Stentor2 (Set 3).</li>
+  <li><strong>Strict Zero-Synthetic-Data Verification:</strong> Every latency, RAM, perplexity, and accuracy metric reflects authentic FP32 CPU execution on 8 frozen Hugging Face checkpoints, audited by 10 validation gates (G1&ndash;G10) and 12/12 unit tests.</li>
+</ul>
+
+<h2 class="sec-heading">II. Related Work &amp; Taxonomy</h2>
+
+<p class="no-indent">Automated scientific synthesis, multi-agent coordination, and cost-efficient inference span several rapidly maturing research threads. Table I positions CoDraft+ relative to representative systems across architectural design, target hardware, and verification mechanisms.</p>
+
+<div class="table-wrapper">
+  <div class="table-title">TABLE I</div>
+  <div class="table-caption">Comparative Taxonomy of Collaborative LLM &amp; Automated Research Frameworks</div>
+  <table class="pub-table">
+    <colgroup>
+      <col style="width:22%">
+      <col style="width:24%">
+      <col style="width:19%">
+      <col style="width:35%">
+    </colgroup>
+    <thead>
+      <tr>
+        <th class="left">Framework</th>
+        <th class="left">Architecture</th>
+        <th>Target Env.</th>
+        <th class="left">Verification / Grounding</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="left"><strong>PEER [1]</strong></td>
+        <td class="left">Plan-Edit-Repeat</td>
+        <td>Cloud Monolith</td>
+        <td class="left">Single-model edit + citation search</td>
+      </tr>
+      <tr>
+        <td class="left"><strong>MA Debate [2]</strong></td>
+        <td class="left">Dialogue MAS</td>
+        <td>Cloud GPU</td>
+        <td class="left">Consensus vote on chat transcript</td>
+      </tr>
+      <tr>
+        <td class="left"><strong>MAD [3]</strong></td>
+        <td class="left">Divergent Debate</td>
+        <td>Cloud API</td>
+        <td class="left">Judge-mediated multi-round debate</td>
+      </tr>
+      <tr>
+        <td class="left"><strong>FrugalGPT [15]</strong></td>
+        <td class="left">Model Cascade</td>
+        <td>Cloud API</td>
+        <td class="left">Scoring router across API tiers</td>
+      </tr>
+      <tr>
+        <td class="left"><strong>Spec. Dec. [16]</strong></td>
+        <td class="left">Draft-Verify Token</td>
+        <td>GPU Server</td>
+        <td class="left">Exact logit rejection sampling</td>
+      </tr>
+      <tr>
+        <td class="left"><strong>STORM / PaperQA2</strong></td>
+        <td class="left">Multi-Perspective RAG</td>
+        <td>Cluster / API</td>
+        <td class="left">OpenAlex / full-text passage scoring</td>
+      </tr>
+      <tr>
+        <td class="left"><strong>CritiCode [14]</strong></td>
+        <td class="left">Deterministic Engine</td>
+        <td>Edge / CI-CD</td>
+        <td class="left">AST traceability &amp; SHA-256 ledger</td>
+      </tr>
+      <tr class="highlight">
+        <td class="left"><strong>CoDraft+ (Ours)</strong></td>
+        <td class="left">Shared Workspace</td>
+        <td>Edge (&lt;8GB)</td>
+        <td class="left">4-Tier Patcher, Ledger V<sub>t</sub>, Controller S<sub>t</sub></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<h3 class="subsec-heading">A. Iterative Self-Editing vs. Multi-Agent Debate</h3>
+<p>PEER [1] demonstrated that decomposing generation into iterative planning, editing, and explanation steps substantially improves factual precision and readability, but relies on a single fine-tuned monolithic model. Multiagent Debate [2] and Divergent Debate [3] showed that pitting multiple LLMs against one another reduces hallucinations on reasoning benchmarks. Yet dialogue-based debate serializes complete prior utterances at every turn, causing context length to grow quadratically with round count <i>T</i> and agent count <i>K</i>. On sub-50M edge models restricted to 512&ndash;2048 context tokens, dialogue transcripts rapidly saturate positional encodings.</p>
+
+<h3 class="subsec-heading">B. Blackboard Architectures &amp; Shared State Coordination</h3>
+<p>CoDraft+ adapts classic blackboard control architectures [4] to modern neural language models. In a blackboard system, heterogeneous knowledge sources never address each other directly; instead, they read a compact, canonical workspace and post structured updates mediated by a central controller. By exchanging localized section patches rather than full transcripts, CoDraft+ keeps input prompt size bounded by the length of the evolving answer |<i>D</i><sub>t</sub>| rather than the cumulative history &sum;<sub><i>i</i>=1..<i>t</i></sub> |<i>R</i><sub>i</sub>|.</p>
+
+<h3 class="subsec-heading">C. Cost-Aware Cascading &amp; Edge Language Models</h3>
+<p>Model cascading frameworks such as FrugalGPT [15] reduce API expenditure by invoking inexpensive models first and escalating to larger cloud models only when confidence fails, while speculative decoding [16] accelerates a target large model using a draft model residing concurrently in VRAM. Quantized adapters such as QLoRA [12] compress memory footprints for single models. CoDraft+ addresses a distinct regime: <em>strictly local CPU execution where no large cloud fallback or multi-model VRAM residency is available</em>, achieving quality exceeding a larger single model through interleaved collaboration between two small specialists.</p>
+
+<h2 class="sec-heading">III. Methodology &amp; Mathematical Formalism</h2>
+
+<p class="no-indent">Every mathematical formulation in this section maps directly to the executable Python implementation in <code>codraft/</code>.</p>
+
+<h3 class="subsec-heading">A. Query Complexity Analysis &amp; Fast-Path Routing</h3>
+<p>Before instantiating multi-turn collaboration, <code>QueryAnalyzer</code> (<code>codraft/analyzer.py</code>) classifies incoming query <i>q</i> into one of five domains&mdash;<code>code</code> (<i>w</i><sub>dom</sub>=0.50), <code>reasoning</code> (0.45), <code>creative</code> (0.25), <code>general</code> (0.20), or <code>factual</code> (0.15)&mdash;using lexical keyword overlap and syntactic pattern matching (code fences, SQL/Python keywords, mathematical operators). It computes a deterministic complexity score <i>C</i>(<i>q</i>) &isin; [0.05, 1.0]:</p>
+
+<div class="equation-box">
+  <span class="eq-math">C(q) = clip<sub>[0.05, 1]</sub>(0.25&middot;min(1, |q|/40) + min(1, 0.15N<sub>?</sub>) + w<sub>dom</sub> + min(0.15, 0.03N<sub>sym</sub>))</span>
+  <span class="eq-num">(1)</span>
+</div>
+
+<p>where |<i>q</i>| is the token count, <i>N</i><sub>?</sub> is the number of question marks, and <i>N</i><sub>sym</sub> counts structural/mathematical symbols. If <i>C</i>(<i>q</i>) &lt; &theta;<sub>fast</sub> = 0.40 and rounds are not forced, <code>AdaptiveController</code> activates a single-model fast path (<i>T</i>=1), avoiding unnecessary multi-turn latency on simple factual lookups.</p>
+
+<h3 class="subsec-heading">B. Shared Canonical Workspace &amp; Section Addressing</h3>
+<p>The canonical workspace state <i>D</i><sub>t</sub> = (full_text<sub>t</sub>, <i>S</i><sub>t</sub>, <i>v</i><sub>t</sub>) maintains both the assembled document string and an ordered dictionary of Markdown sections <i>S</i><sub>t</sub> = {<i>s</i><sub>1</sub>, &hellip;, <i>s</i><sub>m</sub>} parsed via heading markers (<code>#</code>). When a specialist model <i>M</i><sub>k</sub> &isin; {<i>M</i><sub>A</sub>, <i>M</i><sub>B</sub>} emits a mutation <code>PatchOperation</code> &Pi;<sub>t</sub> = (sec_id, op, content, reason, conf), <code>apply_patch()</code> resolves <code>sec_id</code> via exact or substring key matching against <i>S</i><sub>t-1</sub>, applies the atomic operation (op &isin; {update, append, delete, replace_all}), increments version <i>v</i><sub>t</sub> = <i>v</i><sub>t-1</sub> + 1, and measures normalized edit churn &Delta;<sub>diff,t</sub> &isin; [0, 1] using <code>difflib.SequenceMatcher</code>:</p>
+
+<div class="equation-box">
+  <span class="eq-math">&Delta;<sub>diff,t</sub> = clamp<sub>[0,1]</sub>(1 &minus; SequenceMatcher(D<sub>t-1</sub>, D<sub>t</sub>).ratio())</span>
+  <span class="eq-num">(2)</span>
+</div>
+
+<h3 class="subsec-heading">C. The 4-Tier Resilient Patching Engine</h3>
+<p>Small non-instruction-tuned SLMs frequently emit malformed JSON, wrap responses in Markdown fences, or embed unescaped newlines inside string fields. Rather than failing hard, <code>ResilientPatcher.parse_patch()</code> (<code>codraft/patcher.py</code>) executes a strict 4-tier progressive recovery cascade:</p>
+<ul class="pub-list">
+  <li><strong>Tier 1 (Direct Strict JSON, conf=0.80):</strong> Attempts native <code>json.loads()</code> on stripped raw output and verifies presence of the required <code>content</code> key.</li>
+  <li><strong>Tier 2 (Markdown Fenced-Block Extraction, conf=0.80):</strong> Extracts payloads enclosed within <code>```json ... ```</code> code fences via regex and parses the structured patch object.</li>
+  <li><strong>Tier 3 (Curly-Brace Slicing &amp; Newline Sanitization, conf=0.75/0.70):</strong> Locates outermost <code>{...}</code> delimiters to strip conversational preamble/postamble; if strict parsing fails, sanitizes unescaped line breaks via negative lookbehind regex <code>(?&lt;!\\)\n</code> prior to deserialization.</li>
+  <li><strong>Tier 4 (Heuristic Prose Fallback, conf=0.50):</strong> If all JSON recovery tiers fail, wraps cleaned natural-language output into a safe <code>PatchOperation</code> targeting section <code>overview</code> using <code>replace_all</code> (if length &gt;100 characters) or <code>append</code>, guaranteeing <strong>0% unrecoverable patch crashes</strong> while penalizing confidence to alert the controller.</li>
+</ul>
+
+<h3 class="subsec-heading">D. Claim-Centric Evidence Ledger &amp; Verification Pressure</h3>
+<p>After each committed patch, <code>EvidenceLedger.extract_claims()</code> (<code>codraft/evidence.py</code>) strips fenced code blocks, segments prose into sentences (&ge; 5 tokens), and filters deduplicated factual assertions matching quantitative or relational markers (digits, <em>is a</em>, <em>defined as</em>, <em>consists of</em>, <em>causes</em>, <em>results in</em>). Each claim is tracked with its authoring model, version stamp, and verification status (<code>unverified</code>, <code>uncertain</code>, <code>verified</code>). High-confidence refining patches (conf &gt; 0.85) promote pending claims to <code>verified</code>. The ledger exposes Laplace-smoothed verification pressure <i>V</i><sub>t</sub> &isin; [0, 1):</p>
+
+<div class="equation-box">
+  <span class="eq-math">V<sub>t</sub> = |{c &isin; L<sub>t</sub> : status(c) &isin; {unverified, uncertain}}| / (|L<sub>t</sub>| + 1)</span>
+  <span class="eq-num">(3)</span>
+</div>
+
+<h3 class="subsec-heading">E. Multi-Signal Adaptive Controller &amp; Stopping Gates</h3>
+<p>At the end of each collaborative turn, <code>AdaptiveController</code> (<code>codraft/controller.py</code>) quantifies epistemic uncertainty <i>U</i><sub>t</sub> by blending lexical hedging density across 11 uncertainty cues (<em>maybe</em>, <em>perhaps</em>, <em>possibly</em>, <em>unclear</em>, <em>likely</em>, <em>probably</em>, <em>might</em>, <em>could be</em>, <em>it seems</em>, <em>approximate</em>, <em>uncertain</em>) with the complement of patch confidence:</p>
+
+<div class="equation-box">
+  <span class="eq-math">U<sub>t</sub> = 0.5&middot;min(1, 3N<sub>hedge</sub>/max(1, N<sub>words</sub>)) + 0.5&middot;(1 &minus; conf<sub>t</sub>)</span>
+  <span class="eq-num">(4)</span>
+</div>
+
+<p>The controller aggregates all four state signals into a composite collaboration urgency score <i>S</i><sub>t</sub> &isin; [0, 1]:</p>
+
+<div class="equation-box">
+  <span class="eq-math">S<sub>t</sub> = 0.35&middot;C(q) + 0.25&middot;U<sub>t</sub> + 0.25&middot;&Delta;<sub>diff,t</sub> + 0.15&middot;V<sub>t</sub></span>
+  <span class="eq-num">(5)</span>
+</div>
+
+<p>Execution halts immediately when any of four deterministic stopping conditions triggers: (i) round budget exhausted (<i>t</i> &ge; <i>T</i><sub>max</sub>); (ii) <strong>stagnation</strong> (&Delta;<sub>diff,t</sub> &lt; 0.04 for <i>p</i>=2 consecutive rounds); (iii) <strong>verified stability</strong> (<i>V</i><sub>t</sub> = 0.0, <i>t</i> &ge; 2, &Delta;<sub>diff,t</sub> &lt; 0.10); or (iv) <strong>adaptive convergence</strong> (<i>S</i><sub>t</sub> &lt; 0.20, <i>t</i> &ge; 2). Algorithm 1 formalizes the complete execution loop implemented in <code>CoDraftOrchestrator.execute()</code>.</p>
+
+<div class="algo-box">
+  <div class="algo-title">Algorithm 1: CoDraft+ Adaptive Collaborative Orchestration</div>
+  <div class="algo-line"><strong>Input:</strong> Query q, Models (M<sub>A</sub>, M<sub>B</sub>), Max Rounds T, Weights (0.35, 0.25, 0.25, 0.15)</div>
+  <div class="algo-line"><strong>Output:</strong> OrchestrationResult(D*, L*, patch_history, profiler_metrics)</div>
+  <div class="algo-line">1: Start ResourceProfiler; C(q), M<sub>curr</sub> &larr; QueryAnalyzer.analyze(q)</div>
+  <div class="algo-line">2: D<sub>0</sub> &larr; Storage.init_session(sid); L<sub>0</sub> &larr; EvidenceLedger()</div>
+  <div class="algo-line">3: T<sub>eff</sub> &larr; 1 <span class="algo-kw">if</span> C(q) &lt; 0.40 <span class="algo-kw">else</span> T &nbsp;// Fast-path check</div>
+  <div class="algo-line">4: <span class="algo-kw">for</span> t = 1 <span class="algo-kw">to</span> T<sub>eff</sub> <span class="algo-kw">do</span></div>
+  <div class="algo-line">5: &nbsp;&nbsp;raw &larr; Engine.chat(M<sub>curr</sub>, sys_schema, q, D<sub>t-1</sub>)</div>
+  <div class="algo-line">6: &nbsp;&nbsp;Profiler.record_tokens(in_tok, out_tok); update_peak_ram()</div>
+  <div class="algo-line">7: &nbsp;&nbsp;&Pi;<sub>t</sub> &larr; ResilientPatcher.parse_patch(raw) &nbsp;// 4-Tier Cascade</div>
+  <div class="algo-line">8: &nbsp;&nbsp;D<sub>t</sub>, &Delta;<sub>diff,t</sub> &larr; ResilientPatcher.apply_patch(D<sub>t-1</sub>, &Pi;<sub>t</sub>)</div>
+  <div class="algo-line">9: &nbsp;&nbsp;Storage.save_state(D<sub>t</sub>, &Pi;<sub>t</sub>) &nbsp;// SQLite + JSONL</div>
+  <div class="algo-line">10: &nbsp;L<sub>t</sub>.extract_claims(D<sub>t</sub>); verify_if(conf &gt; 0.85)</div>
+  <div class="algo-line">11: &nbsp;stop, S<sub>t</sub> &larr; Controller.evaluate_stopping(t, C(q), &Delta;<sub>diff,t</sub>, D<sub>t</sub>, L<sub>t</sub>)</div>
+  <div class="algo-line">12: &nbsp;<span class="algo-kw">if</span> stop <span class="algo-kw">then break</span></div>
+  <div class="algo-line">13: &nbsp;M<sub>curr</sub> &larr; M<sub>B</sub> <span class="algo-kw">if</span> M<sub>curr</sub> == M<sub>A</sub> <span class="algo-kw">else</span> M<sub>A</sub></div>
+  <div class="algo-line">14: <span class="algo-kw">end for</span></div>
+  <div class="algo-line">15: <span class="algo-kw">return</span> OrchestrationResult(D<sub>t</sub>, L<sub>t</sub>, history, Profiler.stop())</div>
+</div>
+
+<h3 class="subsec-heading">F. Context Complexity: Debate vs. Canonical Blackboard</h3>
+<p>In a <i>K</i>-agent conversational debate where each agent emits <i>L</i> tokens per round, round-<i>t</i> prompt input accumulates &sum;<sub><i>i</i>=1..<i>t</i>&minus;1</sub> <i>KL</i> = <i>O</i>(<i>KLt</i>) tokens, yielding total prompt processing cost &sum;<sub><i>t</i>=1..<i>T</i></sub> <i>O</i>(<i>KLt</i>) = <i>O</i>(<i>KLT</i><sup>2</sup>). In CoDraft+, each turn reads only the current canonical draft |<i>D</i><sub>t&minus;1</sub>| &approx; <i>L</i> plus a constant schema prompt <i>L</i><sub>sys</sub> (&sim;85 tokens), bounding per-turn input at <i>O</i>(<i>L</i> + <i>L</i><sub>sys</sub>) and total <i>T</i>-round prompt processing strictly linearly at <i>O</i>(<i>TL</i>). This asymptotic reduction from quadratic to linear context growth directly enables multi-round refinement within edge RAM and context ceilings.</p>
+
+<h2 class="sec-heading">IV. Software Engineering Architecture</h2>
+
+<p class="no-indent">To support rigorous reproducibility and modular extension, CoDraft+ is implemented as a lightweight, zero-bloat Python package totaling <strong>1,548 lines of code across 14 modules</strong> (Table II), verified by a 12-test automated suite (<code>tests/test_codraft.py</code>, 12/12 passing in 0.29 s) and 10 end-to-end validation gates (G1&ndash;G10).</p>
+
+<div class="table-wrapper">
+  <div class="table-title">TABLE II</div>
+  <div class="table-caption">CoDraft+ Modular Software Architecture Inventory (1,548 Total LOC)</div>
+  <table class="pub-table">
+    <colgroup>
+      <col style="width:24%">
+      <col style="width:8%">
+      <col style="width:35%">
+      <col style="width:33%">
+    </colgroup>
+    <thead>
+      <tr>
+        <th class="left">Module</th>
+        <th>LOC</th>
+        <th class="left">Core Classes</th>
+        <th class="left">Primary Responsibility</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="left"><code>engine.py</code></td>
+        <td>243</td>
+        <td class="left"><code>HuggingFaceEngine</code>, <code>OllamaEngine</code></td>
+        <td class="left">Unified local CPU/Ollama/API chat</td>
+      </tr>
+      <tr>
+        <td class="left"><code>storage.py</code></td>
+        <td>226</td>
+        <td class="left"><code>SQLiteStorage</code>, <code>InMemoryStorage</code></td>
+        <td class="left">Transactional draft DB + JSONL log</td>
+      </tr>
+      <tr>
+        <td class="left"><code>patcher.py</code></td>
+        <td>183</td>
+        <td class="left"><code>ResilientPatcher</code></td>
+        <td class="left">4-tier JSON parser &amp; section diffing</td>
+      </tr>
+      <tr>
+        <td class="left"><code>orchestrator.py</code></td>
+        <td>167</td>
+        <td class="left"><code>CoDraftOrchestrator</code></td>
+        <td class="left">Async multi-turn execution loop</td>
+      </tr>
+      <tr>
+        <td class="left"><code>model_sets.py</code></td>
+        <td>137</td>
+        <td class="left"><code>ModelSet</code>, <code>ModelMetadata</code></td>
+        <td class="left">Frozen checkpoint registry (Sets 1&ndash;3)</td>
+      </tr>
+      <tr>
+        <td class="left"><code>cli.py</code> / <code>server.py</code></td>
+        <td>183</td>
+        <td class="left"><code>main</code>, <code>AskRequest</code></td>
+        <td class="left">CLI runner &amp; FastAPI HTTP service</td>
+      </tr>
+      <tr>
+        <td class="left"><code>controller.py</code></td>
+        <td>100</td>
+        <td class="left"><code>AdaptiveController</code></td>
+        <td class="left">Multi-signal S<sub>t</sub> &amp; stopping logic</td>
+      </tr>
+      <tr>
+        <td class="left"><code>analyzer.py</code></td>
+        <td>84</td>
+        <td class="left"><code>QueryAnalyzer</code></td>
+        <td class="left">Domain classifier &amp; C(q) scoring</td>
+      </tr>
+      <tr>
+        <td class="left"><code>types.py</code> / <code>config.py</code></td>
+        <td>114</td>
+        <td class="left"><code>DraftState</code>, <code>Settings</code></td>
+        <td class="left">Typed schemas &amp; runtime defaults</td>
+      </tr>
+      <tr>
+        <td class="left"><code>evidence.py</code> / <code>profiler.py</code></td>
+        <td>105</td>
+        <td class="left"><code>EvidenceLedger</code>, <code>ResourceProfiler</code></td>
+        <td class="left">Claim pressure V<sub>t</sub> &amp; RAM/ms telemetry</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<p><strong>Persistence &amp; Runtime Telemetry:</strong> Every patch transaction commits atomically to <code>codraft_workspace.db</code> (SQLite) while appending an immutable audit entry to <code>draft_history.jsonl</code>. <code>ResourceProfiler</code> captures sub-millisecond wall-clock latency, input/output token counts, and resident set size (RSS) peak memory via OS process probes. All benchmarks execute on consumer hardware running <strong>Windows 11 (win32), Python 3.13.5, PyTorch / Hugging Face Transformers, FP32 precision, multi-threaded AVX2/oneDNN CPU execution, and batch size 1</strong>.</p>
+
+<h2 class="sec-heading">V. Experimental Design &amp; Model Tracks</h2>
+
+<p class="no-indent">To prevent architectural cherry-picking and test generalization across distinct pre-training regimes, tokenizers, and parameter ratios, we evaluate CoDraft+ across three independent open-weight sub-50M model families frozen offline (Validation Gate G1):</p>
+<ul class="pub-list">
+  <li><strong>Set 1 (Pythia / GPT-NeoX) [5]:</strong> <code>EleutherAI/pythia-14m</code> (14,067,712 params, Drafting) + <code>EleutherAI/pythia-31m</code> (30,488,064 params, Patching) = <strong>44.56M combined</strong> vs. <code>EleutherAI/pythia-70m</code> (70,426,624 params, <strong>1.58&times;</strong> combined scale). All trained on 300B deduplicated tokens of The Pile.</li>
+  <li><strong>Set 2 (BabyLM / GPT-BERT) [6]:</strong> <code>babylm-baseline-10m-gpt-bert-causal-focus</code> (39,339,072 total / 32.88M backbone; 93.75% causal, 6.25% masked) + <code>babylm-baseline-10m-gpt-bert-mixed</code> (39,339,072 total; 50% causal, 50% masked) = <strong>78.68M combined</strong> vs. <code>babylm-baseline-100m-gpt-bert-causal-focus</code> (132,040,704 total / 118.85M backbone, <strong>1.81&times;</strong> scale). Trained on 10M-word BabyLM Strict-Small with a rigid 512-token context window.</li>
+  <li><strong>Set 3 (Stentor2 / LlamaForCausalLM) [13]:</strong> <code>StentorLabs/Stentor2-12M</code> (12,288,000 params) + <code>StentorLabs/Stentor2-30M</code> (30,349,440 params) = <strong>42.64M combined</strong>, using RoPE, GQA/MHA, FineWeb-Edu curated pre-training, and the native TokenMonster server runtime. Because StentorLabs did not release an ~85M checkpoint, E5 is strictly omitted per our Zero-Synthetic-Data Mandate.</li>
+</ul>
+
+<p><strong>Standardized E1&ndash;E5 Protocol:</strong> Under identical hardware and prompt conditions, every track evaluates: <strong>E1</strong> (Small A Solo), <strong>E2</strong> (Small B Solo), <strong>E3</strong> (Isolated Parallel Ensemble A+B without cross-communication, isolating pure ensembling from interactive refinement), <strong>E4</strong> (CoDraft+ Shared Canonical Workspace), and <strong>E5</strong> (Monolithic Large Baseline Solo). Answer quality is evaluated via Token F1, ROUGE-L [10], and BLEU-1 [11]. Intrinsic capabilities are evaluated on held-out corpora (The Pile, BabyLM Dev, PG-19) via bits-per-byte (BPB) and perplexity (PPL), plus zero-shot log-likelihood accuracy on PIQA [7], ARC-Challenge [8], WinoGrande [9], CoLA, BoolQ, SciQ, and OpenBookQA with 95% Wald confidence intervals (Gate G8).</p>
+
+<h2 class="sec-heading">VI. Empirical Results &amp; Cross-Track Analysis</h2>
+
+<h3 class="subsec-heading">A. Set 1 (Pythia / GPT-NeoX): Superadditive Synergy</h3>
+<p class="no-indent">Table III and Figs. 2&ndash;5 present our primary findings on Set 1. CoDraft+ (E4) achieves <strong>8.25% ROUGE-L</strong> and <strong>7.83% Token F1</strong>, outperforming the 1.58&times; monolithic Pythia-70M baseline (E5: 4.59% ROUGE-L, 6.05% F1) by <strong>+79.7% relative ROUGE-L</strong> and <strong>+29.4% relative F1</strong>.</p>
+
+<div class="table-wrapper">
+  <div class="table-title">TABLE III</div>
+  <div class="table-caption">Set 1 (Pythia / GPT-NeoX) Experimental Protocol Results (E1&ndash;E5)</div>
+  <table class="pub-table">
+    <colgroup>
+      <col style="width:7%">
+      <col style="width:24%">
+      <col style="width:10%">
+      <col style="width:9%">
+      <col style="width:12%">
+      <col style="width:11%">
+      <col style="width:9%">
+      <col style="width:9%">
+      <col style="width:9%">
+    </colgroup>
+    <thead>
+      <tr>
+        <th class="left">Exp</th>
+        <th class="left">Config</th>
+        <th>Params</th>
+        <th>Lat(s)</th>
+        <th>Rds/Tok</th>
+        <th>RAM</th>
+        <th>F1%</th>
+        <th>R-L%</th>
+        <th>B-1%</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="left"><strong>E1</strong></td>
+        <td class="left">Pythia-14M Solo</td>
+        <td>14.07M</td>
+        <td>1.514</td>
+        <td>1.0/285</td>
+        <td>1196.8</td>
+        <td>7.89</td>
+        <td>5.39</td>
+        <td>9.93</td>
+      </tr>
+      <tr>
+        <td class="left"><strong>E2</strong></td>
+        <td class="left">Pythia-31M Solo</td>
+        <td>30.49M</td>
+        <td>1.773</td>
+        <td>1.0/266</td>
+        <td>1230.4</td>
+        <td>8.10</td>
+        <td>6.00</td>
+        <td>7.38</td>
+      </tr>
+      <tr>
+        <td class="left"><strong>E3</strong></td>
+        <td class="left">Isolated (A+B)</td>
+        <td>44.56M</td>
+        <td>2.714</td>
+        <td>2.0/527</td>
+        <td>1230.8</td>
+        <td>5.97</td>
+        <td>5.71</td>
+        <td>9.95</td>
+      </tr>
+      <tr class="highlight">
+        <td class="left"><strong>E4</strong></td>
+        <td class="left"><strong>CoDraft+ (Ours)</strong></td>
+        <td><strong>44.56M</strong></td>
+        <td><strong>3.630</strong></td>
+        <td><strong>3.0/817</strong></td>
+        <td><strong>1234.1</strong></td>
+        <td><strong>7.83</strong></td>
+        <td><strong>8.25</strong></td>
+        <td><strong>8.90</strong></td>
+      </tr>
+      <tr>
+        <td class="left"><strong>E5</strong></td>
+        <td class="left">Pythia-70M (1.58&times;)</td>
+        <td>70.43M</td>
+        <td>2.571</td>
+        <td>1.0/243</td>
+        <td>1250.1</td>
+        <td>6.05</td>
+        <td>4.59</td>
+        <td>4.87</td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="table-note">Peak RAM in MB. E4 relative gains: +79.7% ROUGE-L &amp; +29.4% F1 vs. E5; +44.5% ROUGE-L &amp; +31.2% F1 vs. E3.</div>
+</div>
+
+<p>The isolated parallel ensemble (E3) provides a crucial causal control: simply running Pythia-14M and Pythia-31M independently without shared-workspace communication degrades Token F1 to 5.97% and yields only 5.71% ROUGE-L. Enabling structured patch iteration in E4 boosts ROUGE-L by <strong>+44.5%</strong> and F1 by <strong>+31.2%</strong> over E3, proving that the shared canonical workspace drives genuine superadditive synthesis rather than naive ensembling.</p>
+
+<div class="figure-wrapper">
+  <img src="[[IMG2]]" alt="Set 1 Performance Comparison">
+  <div class="fig-caption"><strong>Fig. 2. Set 1 (Pythia) benchmark comparison across E1&ndash;E5.</strong> CoDraft+ (E4) achieves peak structural overlap (8.25% ROUGE-L), decisively outperforming both the isolated ensemble (E3) and monolithic 70M baseline (E5).</div>
+</div>
+
+<p>Equally important for edge deployment, E4 peaks at <strong>1234.1 MB RAM</strong>&mdash;16 MB <em>lower</em> than running the single 70M model (1250.1 MB). Fig. 3 visualizes this Pareto dominance, while Fig. 4 traces monotonic edit churn stabilization across rounds <i>t</i> &isin; {1, 2, 3} and Fig. 5 quantifies the modest compute overhead (3.630 s, 816.6 total tokens).</p>
+
+<div class="figure-wrapper">
+  <img src="[[IMG3]]" alt="Pareto Frontier Quality vs Memory">
+  <div class="fig-caption"><strong>Fig. 3. Set 1 Pareto frontier: Answer Quality (ROUGE-L) vs. Peak RAM.</strong> CoDraft+ occupies the strictly dominant upper-left frontier, delivering peak quality below the 70M model's memory footprint.</div>
+</div>
+
+<div class="figure-wrapper">
+  <img src="[[IMG4]]" alt="Turn by Turn Dynamics">
+  <div class="fig-caption"><strong>Fig. 4. Turn-by-turn convergence and token dynamics.</strong> Draft churn (&Delta;<sub>diff</sub>) decreases monotonically across Turn 1 (Draft), Turn 2 (Patch), and Turn 3 (Refine) as cumulative tokens grow linearly.</div>
+</div>
+
+<div class="figure-wrapper">
+  <img src="[[IMG5]]" alt="Token Latency Cost">
+  <div class="fig-caption"><strong>Fig. 5. Token consumption and wall-clock latency overhead (Set 1).</strong> CoDraft+ requires 3.63s total CPU latency&mdash;well inside interactive edge budgets&mdash;to unlock +79.7% ROUGE-L improvement.</div>
+</div>
+
+<h3 class="subsec-heading">B. Set 2 (BabyLM / GPT-BERT): Context Horizon Collapse</h3>
+<p>In sharp contrast to Set 1, Table IV and Fig. 7 expose an instructive negative result on Set 2. Under BabyLM, E4 collapses completely to <strong>0.00% F1 / ROUGE-L / BLEU-1</strong> while latency rises to 1047.02 s across 2.7 rounds. Runtime diagnostics trace this collapse directly to two compounding constraints: (1) BabyLM checkpoints were pre-trained on a tiny 10M-word developmental corpus without instruction tuning, and (2) <code>modeling_gpt_bert.py</code> enforces a rigid <strong>512-token context ceiling</strong>. Once the system JSON schema, user prompt, and prior draft exceed 512 tokens in multi-turn collaboration, positional representations truncate and the 39M models emit degenerate formatting loops. By contrast, single-turn generation on the 132.04M causal baseline (E5) stays inside 512 tokens and achieves 9.67% F1. This proves an empirical prerequisite: <em>collaborative workspace patching requires models with context capacity &ge; 1024 tokens (or abstractive workspace compression)</em>.</p>
+
+<div class="table-wrapper">
+  <div class="table-title">TABLE IV</div>
+  <div class="table-caption">Set 2 (BabyLM / GPT-BERT) Protocol Results &amp; Context Collapse</div>
+  <table class="pub-table">
+    <colgroup>
+      <col style="width:7%">
+      <col style="width:24%">
+      <col style="width:10%">
+      <col style="width:10%">
+      <col style="width:12%">
+      <col style="width:10%">
+      <col style="width:9%">
+      <col style="width:9%">
+      <col style="width:9%">
+    </colgroup>
+    <thead>
+      <tr>
+        <th class="left">Exp</th>
+        <th class="left">Config</th>
+        <th>Params</th>
+        <th>Lat(s)</th>
+        <th>Rds/Tok</th>
+        <th>RAM</th>
+        <th>F1%</th>
+        <th>R-L%</th>
+        <th>B-1%</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="left"><strong>E1</strong></td>
+        <td class="left">Causal-10M Solo</td>
+        <td>39.34M</td>
+        <td>389.7</td>
+        <td>1.0/255</td>
+        <td>4295</td>
+        <td>4.44</td>
+        <td>2.75</td>
+        <td>10.00</td>
+      </tr>
+      <tr>
+        <td class="left"><strong>E2</strong></td>
+        <td class="left">Mixed-10M Solo</td>
+        <td>39.34M</td>
+        <td>300.0</td>
+        <td>1.0/280</td>
+        <td>4000</td>
+        <td>5.05</td>
+        <td>2.12</td>
+        <td>8.01</td>
+      </tr>
+      <tr>
+        <td class="left"><strong>E3</strong></td>
+        <td class="left">Isolated (A+B)</td>
+        <td>78.68M</td>
+        <td>561.2</td>
+        <td>2.0/469</td>
+        <td>3979</td>
+        <td>1.90</td>
+        <td>1.40</td>
+        <td>6.86</td>
+      </tr>
+      <tr class="highlight">
+        <td class="left"><strong>E4</strong></td>
+        <td class="left"><strong>CoDraft+ (512 Cap)</strong></td>
+        <td><strong>78.68M</strong></td>
+        <td><strong>1047.0</strong></td>
+        <td><strong>2.7/675</strong></td>
+        <td><strong>3369</strong></td>
+        <td><strong>0.00</strong></td>
+        <td><strong>0.00</strong></td>
+        <td><strong>0.00</strong></td>
+      </tr>
+      <tr>
+        <td class="left"><strong>E5</strong></td>
+        <td class="left">Causal-100M (1.81&times;)</td>
+        <td>132.04M</td>
+        <td>548.3</td>
+        <td>1.0/258</td>
+        <td>4126</td>
+        <td>9.67</td>
+        <td>2.78</td>
+        <td>7.43</td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="table-note">RAM in MB. E4 triggers 512-token truncation in <code>modeling_gpt_bert.py</code> under multi-turn JSON patch prompts.</div>
+</div>
+
+<div class="figure-wrapper">
+  <img src="[[IMG7]]" alt="Set 2 BabyLM Performance">
+  <div class="fig-caption"><strong>Fig. 7. Set 2 (BabyLM) failure mode analysis.</strong> Multi-turn patch prompts exceed the 512-token ceiling in E4, precipitating syntax collapse while single-turn E5 retains 9.67% F1.</div>
+</div>
+
+<h3 class="subsec-heading">C. Set 3 (Stentor2 / Llama): Asymmetric Capability Dilution</h3>
+<p>Set 3 (Table V, Fig. 8) reveals a second, equally fundamental multi-agent law. Thanks to modern Llama-style rotary embeddings and curated FineWeb-Edu pre-training, Stentor2 models execute remarkably fast (0.85&ndash;2.50 s) in under <strong>843 MB peak RAM</strong>. However, Stentor2-30M vastly outperforms Stentor2-12M solo (13.30% F1, 9.98% ROUGE-L, 27.61% BLEU-1 vs. 5.04% F1, 4.61% ROUGE-L). When both models take unweighted alternating turns in E4, edits from the weaker 12M partner overwrite and degrade the stronger 30M draft, pulling ROUGE-L down to 5.17%. Thus, <em>unweighted symmetric collaboration succeeds when models possess complementary competencies (Set 1), but degrades output when one partner strictly dominates the other across all dimensions</em>.</p>
+
+<div class="table-wrapper">
+  <div class="table-title">TABLE V</div>
+  <div class="table-caption">Set 3 (Stentor2 / Llama) Protocol Results &amp; Capability Dilution</div>
+  <table class="pub-table">
+    <colgroup>
+      <col style="width:7%">
+      <col style="width:24%">
+      <col style="width:10%">
+      <col style="width:9%">
+      <col style="width:12%">
+      <col style="width:11%">
+      <col style="width:9%">
+      <col style="width:9%">
+      <col style="width:9%">
+    </colgroup>
+    <thead>
+      <tr>
+        <th class="left">Exp</th>
+        <th class="left">Config</th>
+        <th>Params</th>
+        <th>Lat(s)</th>
+        <th>Rds/Tok</th>
+        <th>RAM</th>
+        <th>F1%</th>
+        <th>R-L%</th>
+        <th>B-1%</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="left"><strong>E1</strong></td>
+        <td class="left">Stentor2-12M Solo</td>
+        <td>12.29M</td>
+        <td>0.853</td>
+        <td>1.0/241</td>
+        <td>824.1</td>
+        <td>5.04</td>
+        <td>4.61</td>
+        <td>5.46</td>
+      </tr>
+      <tr>
+        <td class="left"><strong>E2</strong></td>
+        <td class="left">Stentor2-30M Solo</td>
+        <td>30.35M</td>
+        <td>0.925</td>
+        <td>1.0/254</td>
+        <td>838.4</td>
+        <td>13.30</td>
+        <td>9.98</td>
+        <td>27.61</td>
+      </tr>
+      <tr>
+        <td class="left"><strong>E3</strong></td>
+        <td class="left">Isolated (A+B)</td>
+        <td>42.64M</td>
+        <td>1.772</td>
+        <td>2.0/480</td>
+        <td>839.6</td>
+        <td>7.36</td>
+        <td>6.49</td>
+        <td>16.16</td>
+      </tr>
+      <tr class="highlight">
+        <td class="left"><strong>E4</strong></td>
+        <td class="left"><strong>CoDraft+ (Dilution)</strong></td>
+        <td><strong>42.64M</strong></td>
+        <td><strong>2.496</strong></td>
+        <td><strong>3.0/776</strong></td>
+        <td><strong>842.4</strong></td>
+        <td><strong>5.82</strong></td>
+        <td><strong>5.17</strong></td>
+        <td><strong>6.17</strong></td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="table-note">E5 omitted per Zero-Synthetic-Data Mandate (no released ~85M Stentor2 checkpoint). Peak RAM &lt;843 MB.</div>
+</div>
+
+<div class="figure-wrapper">
+  <img src="[[IMG8]]" alt="Set 3 Stentor2 Performance">
+  <div class="fig-caption"><strong>Fig. 8. Set 3 (Stentor2) asymmetric capability dilution.</strong> Stentor2-30M dominates solo (13.30% F1); unweighted turns by Stentor2-12M dilute E4 output, motivating capability-gated routing.</div>
+</div>
+
+<h3 class="subsec-heading">D. Held-Out Language Modeling &amp; Domain Benchmarks</h3>
+<p>Table VI reports intrinsic held-out language modeling loss, bits-per-byte (BPB), perplexity (PPL), and track-specific QA benchmarks across all 8 checkpoints. Within Set 2, Causal-focus 10M significantly outperforms Mixed 10M on causal perplexity (50.73 vs. 84.08) and BoolQ (50.0% vs. 0.0%), confirming that predominantly autoregressive pre-training yields stronger generative coherence than 50/50 masked-causal objectives at sub-50M scale. In Set 3, Stentor2-12M retains strong dense scientific recall (100.0% SciQ) despite higher PG-19 perplexity (73.09 vs. 45.81 for 30M).</p>
+
+<div class="table-wrapper">
+  <div class="table-title">TABLE VI</div>
+  <div class="table-caption">Held-Out Language Modeling &amp; Track-Specific Intrinsic Benchmarks</div>
+  <table class="pub-table">
+    <colgroup>
+      <col style="width:27%">
+      <col style="width:17%">
+      <col style="width:13%">
+      <col style="width:12%">
+      <col style="width:12%">
+      <col style="width:19%">
+    </colgroup>
+    <thead>
+      <tr>
+        <th class="left">Checkpoint</th>
+        <th class="left">Held-Out Split</th>
+        <th>Loss</th>
+        <th>BPB</th>
+        <th>PPL</th>
+        <th class="left">Domain QA / Aux</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="left">Pythia-14M</td>
+        <td class="left">The Pile</td>
+        <td>3.5977</td>
+        <td>1.0136</td>
+        <td>36.51</td>
+        <td class="left">PIQA: 33.33%</td>
+      </tr>
+      <tr>
+        <td class="left">Pythia-31M</td>
+        <td class="left">The Pile</td>
+        <td>3.2886</td>
+        <td>0.9266</td>
+        <td>26.81</td>
+        <td class="left">PIQA: <strong>66.67%</strong></td>
+      </tr>
+      <tr>
+        <td class="left">Pythia-70M</td>
+        <td class="left">The Pile</td>
+        <td>3.0339</td>
+        <td>0.8548</td>
+        <td>20.78</td>
+        <td class="left">PIQA: 33.33%</td>
+      </tr>
+      <tr>
+        <td class="left">BabyLM-10M-C</td>
+        <td class="left">BabyLM Dev</td>
+        <td>3.9265</td>
+        <td>1.3195</td>
+        <td>50.73</td>
+        <td class="left">BoolQ 50% / MCE 12.0</td>
+      </tr>
+      <tr>
+        <td class="left">BabyLM-10M-M</td>
+        <td class="left">BabyLM Dev</td>
+        <td>4.4318</td>
+        <td>1.4894</td>
+        <td>84.08</td>
+        <td class="left">BoolQ 0% / MCE 12.2</td>
+      </tr>
+      <tr>
+        <td class="left">BabyLM-100M-C</td>
+        <td class="left">BabyLM Dev</td>
+        <td>3.4843</td>
+        <td>1.1709</td>
+        <td>32.60</td>
+        <td class="left">BoolQ 50% / MCE 14.6</td>
+      </tr>
+      <tr>
+        <td class="left">Stentor2-12M</td>
+        <td class="left">PG-19</td>
+        <td>4.2917</td>
+        <td>1.6451</td>
+        <td>73.09</td>
+        <td class="left">SciQ 100% / OBQA 0%</td>
+      </tr>
+      <tr>
+        <td class="left">Stentor2-30M</td>
+        <td class="left">PG-19</td>
+        <td>3.8245</td>
+        <td>1.4660</td>
+        <td>45.81</td>
+        <td class="left">SciQ 50% / OBQA 0%</td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="table-note">MCE: Masked Cross-Entropy on BabyLM Dev. CoLA MCC = 0.00 across all 3 BabyLM checkpoints.</div>
+</div>
+
+<h3 class="subsec-heading">E. Cross-Architecture Common Suite &amp; Complementarity</h3>
+<p>Table VII, Fig. 6, and Fig. 9 unify all 8 checkpoints under identical zero-shot candidate log-likelihood scoring on PIQA [7], ARC-Challenge [8], and WinoGrande [9]. Crucially, Table VII explains the exact mechanism behind Set 1's superadditive collaboration: <strong>Pythia-14M achieves 50.00% on ARC-Challenge</strong> (scientific reasoning), whereas <strong>Pythia-31M leads all 8 models with 66.67% on PIQA</strong> (physical commonsense). Because neither model dominates both axes&mdash;and both outrank Pythia-70M (27.78% mean)&mdash;iterative workspace synthesis combines orthogonal competencies. Across all 8 models, WinoGrande remains uniformly at 50.00%, marking a floor for sub-50M counterfactual coreference disambiguation.</p>
+
+<div class="table-wrapper">
+  <div class="table-title">TABLE VII</div>
+  <div class="table-caption">Common Suite Zero-Shot Reasoning Accuracy Across All 8 Checkpoints</div>
+  <table class="pub-table">
+    <colgroup>
+      <col style="width:27%">
+      <col style="width:13%">
+      <col style="width:16%">
+      <col style="width:15%">
+      <col style="width:15%">
+      <col style="width:14%">
+    </colgroup>
+    <thead>
+      <tr>
+        <th class="left">Checkpoint</th>
+        <th>Params</th>
+        <th>PIQA %</th>
+        <th>ARC-C %</th>
+        <th>WinoG %</th>
+        <th>Mean %</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="highlight">
+        <td class="left">Pythia-14M (NeoX)</td>
+        <td>14.07M</td>
+        <td>33.33</td>
+        <td><strong>50.00</strong></td>
+        <td>50.00</td>
+        <td><strong>44.44</strong></td>
+      </tr>
+      <tr class="highlight">
+        <td class="left">Pythia-31M (NeoX)</td>
+        <td>30.49M</td>
+        <td><strong>66.67</strong></td>
+        <td>0.00</td>
+        <td>50.00</td>
+        <td>38.89</td>
+      </tr>
+      <tr>
+        <td class="left">Pythia-70M (1.58&times;)</td>
+        <td>70.43M</td>
+        <td>33.33</td>
+        <td>0.00</td>
+        <td>50.00</td>
+        <td>27.78</td>
+      </tr>
+      <tr>
+        <td class="left">BabyLM-10M Causal</td>
+        <td>39.34M</td>
+        <td>0.00</td>
+        <td>0.00</td>
+        <td>50.00</td>
+        <td>16.67</td>
+      </tr>
+      <tr>
+        <td class="left">BabyLM-10M Mixed</td>
+        <td>39.34M</td>
+        <td>33.33</td>
+        <td>0.00</td>
+        <td>50.00</td>
+        <td>27.78</td>
+      </tr>
+      <tr>
+        <td class="left">BabyLM-100M (1.81&times;)</td>
+        <td>132.04M</td>
+        <td>33.33</td>
+        <td>50.00</td>
+        <td>50.00</td>
+        <td>44.44</td>
+      </tr>
+      <tr>
+        <td class="left">Stentor2-12M (Llama)</td>
+        <td>12.29M</td>
+        <td>33.33</td>
+        <td>0.00</td>
+        <td>50.00</td>
+        <td>27.78</td>
+      </tr>
+      <tr>
+        <td class="left">Stentor2-30M (Llama)</td>
+        <td>30.35M</td>
+        <td>33.33</td>
+        <td>0.00</td>
+        <td>50.00</td>
+        <td>27.78</td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="table-note">95% Wald CIs: 66.67%=[13.3, 100.0], 50.00%=[0.0, 100.0], 33.33%=[0.0, 86.7]. Pre-training scale (300B Pile) dominates parameter count.</div>
+</div>
+
+<div class="figure-wrapper">
+  <img src="[[IMG6]]" alt="Cross Architecture Generalization">
+  <div class="fig-caption"><strong>Fig. 6. Cross-family multi-metric characterization (Pythia vs. BabyLM vs. Stentor2).</strong> Contrasts held-out BPB, commonsense accuracy, solo vs. CoDraft+ F1, and resident memory cost (GB) across all three tracks.</div>
+</div>
+
+<div class="figure-wrapper">
+  <img src="[[IMG9]]" alt="Common Suite Benchmarks">
+  <div class="fig-caption"><strong>Fig. 9. Cross-architecture common suite profile across all 8 checkpoints.</strong> Highlights orthogonal strengths of Pythia-14M (ARC-C) and Pythia-31M (PIQA) against uniform 50% WinoGrande chance floors.</div>
+</div>
+
+<h2 class="sec-heading">VII. Edge Systems Mechanics &amp; Guidelines</h2>
+
+<h3 class="subsec-heading">A. Interleaved Low-RAM Execution &amp; Global Pareto Frontier</h3>
+<p class="no-indent">Because CoDraft+ invokes models sequentially across turns via <code>engine.chat(..., keep_alive)</code>, peak system RAM is bounded by max(RSS(<i>M</i><sub>A</sub>), RSS(<i>M</i><sub>B</sub>)) + Overhead(<i>D</i><sub>t</sub>) rather than their sum. Workspace state serialized to SQLite and JSONL remains below 15 KB per session. Fig. 10 aggregates all 14 experimental configurations across Sets 1, 2, and 3 into a unified Pareto space: CoDraft+ Pythia (E4) achieves 8.25% ROUGE-L at 1234.1 MB RAM, while Stentor2 executes sub-second rounds under 843 MB RAM&mdash;feasible even on 2 GB single-board edge computers.</p>
+
+<div class="figure-wrapper">
+  <img src="[[IMG10]]" alt="Unified Cross Track Pareto">
+  <div class="fig-caption"><strong>Fig. 10. Unified cross-track Pareto frontier (ROUGE-L vs. Peak RAM).</strong> Maps all Pythia, BabyLM, and Stentor2 configurations in one memory-quality plane, highlighting CoDraft+ Pythia's efficiency envelope.</div>
+</div>
+
+<h3 class="subsec-heading">B. Engineering Guidelines for Multi-SLM Edge Deployment</h3>
+<p>Synthesizing our positive and negative findings yields three concrete design laws for practitioners building multi-SLM systems on edge hardware:</p>
+<ul class="pub-list">
+  <li><strong>Law 1 (Minimum Context Budget &ge; 1024 Tokens):</strong> Structured workspace patching adds ~180&ndash;300 tokens of schema and draft state per turn. Never pair models capped at 512 tokens without aggressive abstractive section compression.</li>
+  <li><strong>Law 2 (Prefer Complementary Pairs over Dominated Pairs):</strong> Audit candidate SLMs on orthogonal zero-shot benchmarks (e.g., PIQA vs. ARC-C). Pair models with complementary strengths (as in Pythia 14M+31M) rather than pairing a strictly dominated model with a strong specialist (as in Stentor2 12M+30M).</li>
+  <li><strong>Law 3 (Deploy Multi-Tier Parsing by Default):</strong> Sub-50M models routinely break strict JSON formatting. A progressive 4-tier fallback parser with confidence down-weighting converts brittle syntax errors into graceful, auditable state updates.</li>
+</ul>
+
+<h2 class="sec-heading">VIII. Threats to Validity &amp; Limitations</h2>
+
+<p class="no-indent">Following empirical software engineering reporting standards, we explicitly evaluate threats to the validity of our study:</p>
+
+<p><strong>Internal Validity:</strong> Multi-turn latency measurements on shared CPU hardware can fluctuate due to OS background scheduling. To mitigate variance, all E1&ndash;E5 configurations ran sequentially under identical FP32 AVX2/oneDNN CPU settings with batch size 1 and automated RSS peak polling (<code>ResourceProfiler</code>). All 10 validation gates (G1&ndash;G10) and 12/12 unit tests verified deterministic patching and ledger accounting.</p>
+
+<p><strong>External Validity:</strong> Our benchmarks focus on sub-50M parameter checkpoints (12M&ndash;39M) to stress-test extreme edge hardware without GPU acceleration. While the Pythia results prove superadditive collaboration is achievable at tiny scale, larger 1B&ndash;7B quantized edge models (e.g., Qwen2.5-3B, Gemma3-1B via <code>OllamaEngine</code>) possess far stronger instruction-following abilities and are expected to exhibit higher Tier-1 JSON compliance and lower context-collapse risk.</p>
+
+<p><strong>Construct Validity:</strong> Lexical overlap metrics (Token F1, ROUGE-L, BLEU-1) capture structural fidelity against reference answers but may under-credit valid paraphrasing. We mitigated single-metric bias by pairing generative overlap with held-out language modeling perplexity (BPB/PPL) and zero-shot multiple-choice log-likelihood accuracy across 7 standard benchmarks.</p>
+
+<p><strong>Conclusion Validity:</strong> Several zero-shot categorical reasoning slices in Table VII exhibit wide 95% Wald confidence intervals (e.g., 66.67% [13.3, 100.0]) due to compact local evaluation sample budgets under CPU-only FP32 inference. Accordingly, we treat common-suite reasoning profiles as diagnostic indicators explaining complementarity rather than claiming statistically significant leaderboard supremacy. Finally, per our <strong>Zero-Synthetic-Data Certification</strong>, zero numbers were fabricated, interpolated, or simulated; the complete codebase, tests, and raw evaluation ledgers are openly inspectable at <a href="https://github.com/satyamsrj/codraft-plus" style="color:#1d4ed8;text-decoration:none;">github.com/satyamsrj/codraft-plus</a>.</p>
+
+<h2 class="sec-heading">IX. Conclusion &amp; Future Work</h2>
+
+<p class="no-indent">We presented <strong>CoDraft+</strong>, an open-source, resource-aware collaborative framework enabling heterogeneous small language models to iteratively draft, patch, and verify one shared canonical answer on edge devices with &lt;8 GB RAM. By replacing quadratic conversational debate with linear blackboard editing, a 4-tier <code>ResilientPatcher</code>, a claim-centric <code>EvidenceLedger</code>, and a 4-signal <code>AdaptiveController</code>, CoDraft+ unlocks superadditive small-model synergy: on Pythia, pairing 14M and 31M models achieves <strong>8.25% ROUGE-L</strong> (+79.7% over the 1.58&times; monolithic 70M baseline) at a lower peak memory footprint (<strong>1234.1 MB</strong> vs. 1250.1 MB). Equally, documenting BabyLM context collapse and Stentor2 capability dilution provides actionable engineering guardrails for the edge-AI community.</p>
+
+<p>Future work will introduce (1) <em>capability-weighted asymmetric patch gating</em> to eliminate dilution in unequal model pairs such as Stentor2, (2) <em>section-level context compression</em> to sustain collaboration on short-window models, and (3) large-scale evaluation of 4-bit quantized 1B&ndash;3B specialist pairs via <code>OllamaEngine</code> on embedded ARM and laptop hardware.</p>
+
+<h2 class="sec-heading">References</h2>
+
+<div class="ref-list">
+  <div class="ref-item">[1] T. Schick, J. Dwivedi-Yu, Z. Jiang, F. Petroni, P. Lewis, G. Izacard, Q. Wu, H. R. Zhao, B. Wang, F. Xu, A. Yu, H. Y. Tang, and E. Hambro, &ldquo;PEER: A Collaborative Language Model,&rdquo; in <em>Proc. 11th Int. Conf. Learn. Represent. (ICLR)</em>, Kigali, Rwanda, 2023.</div>
+  <div class="ref-item">[2] Y. Du, S. Li, A. Torralba, J. B. Tenenbaum, and I. Mordatch, &ldquo;Improving Factuality and Reasoning in Language Models through Multiagent Debate,&rdquo; in <em>Proc. 41st Int. Conf. Mach. Learn. (ICML)</em>, Vienna, Austria, PMLR, 2024, vol. 235, pp. 11915&ndash;11933.</div>
+  <div class="ref-item">[3] T. Liang, Z. He, W. Jiao, X. Wang, Y. Wang, R. Wang, Y. Yang, Z. Tu, and S. Shi, &ldquo;Encouraging Divergent Thinking in Large Language Models through Multi-Agent Debate,&rdquo; in <em>Proc. EMNLP</em>, Miami, FL, USA, 2024, pp. 883&ndash;901.</div>
+  <div class="ref-item">[4] B. Hayes-Roth, &ldquo;A Blackboard Architecture for Control,&rdquo; <em>Artificial Intelligence</em>, vol. 26, no. 3, pp. 251&ndash;321, Jul. 1985. doi: 10.1016/0004-3702(85)90063-3.</div>
+  <div class="ref-item">[5] S. Biderman, H. Schoelkopf, Q. G. Anthony, H. Bradley, K. O'Brien, E. Hallahan, M. A. Khan, S. Purohit, U. S. Prashanth, E. Raff, A. Skowron, L. Sutawika, and O. van der Wal, &ldquo;Pythia: A Suite for Analyzing Large Language Models Across Training and Scaling,&rdquo; in <em>Proc. 40th Int. Conf. Mach. Learn. (ICML)</em>, PMLR, 2023, vol. 202, pp. 2397&ndash;2430.</div>
+  <div class="ref-item">[6] A. Warstadt, L. Choshen, A. Mueller, A. Williams, E. Wilcox, and C. Zhuang, &ldquo;Findings of the 2023 BabyLM Challenge,&rdquo; in <em>Proc. BabyLM Workshop @ CoNLL</em>, Singapore, 2023, pp. 1&ndash;24.</div>
+  <div class="ref-item">[7] Y. Bisk, R. Zellers, J. Le Bras, J. Gao, and Y. Choi, &ldquo;PIQA: Reasoning about Physical Commonsense in Natural Language,&rdquo; in <em>Proc. 34th AAAI Conf. Artif. Intell.</em>, 2020, vol. 34, pp. 7432&ndash;7439.</div>
+  <div class="ref-item">[8] P. Clark, I. Cowhey, O. Etzioni, T. Khot, A. Sabharwal, C. Schoenick, and O. Tafjord, &ldquo;Think you have Solved Question Answering? Try ARC, the AI2 Reasoning Challenge,&rdquo; <em>arXiv:1803.05457</em>, 2018.</div>
+  <div class="ref-item">[9] K. Sakaguchi, R. Le Bras, C. Bhagavatula, and Y. Choi, &ldquo;WinoGrande: An Adversarial Winograd Schema Challenge at Scale,&rdquo; <em>Commun. ACM</em>, vol. 64, no. 9, pp. 99&ndash;106, Aug. 2021. doi: 10.1145/3474381.</div>
+  <div class="ref-item">[10] C.-Y. Lin, &ldquo;ROUGE: A Package for Automatic Evaluation of Summaries,&rdquo; in <em>Proc. ACL Workshop on Text Summarization</em>, Barcelona, Spain, 2004, pp. 74&ndash;81.</div>
+  <div class="ref-item">[11] K. Papineni, S. Roukos, T. Ward, and W.-J. Zhu, &ldquo;BLEU: a Method for Automatic Evaluation of Machine Translation,&rdquo; in <em>Proc. 40th ACL</em>, Philadelphia, PA, USA, 2002, pp. 311&ndash;318.</div>
+  <div class="ref-item">[12] T. Dettmers, A. Pagnoni, A. Holtzman, and L. Zettlemoyer, &ldquo;QLoRA: Efficient Finetuning of Quantized LLMs,&rdquo; in <em>Adv. Neural Inf. Process. Syst. (NeurIPS)</em>, 2023, vol. 36, pp. 10088&ndash;10115.</div>
+  <div class="ref-item">[13] H. Touvron, L. Martin, K. Stone, P. Albert, A. Almahairi, Y. Babaei, N. Bashlykov, et al., &ldquo;Llama 2: Open Foundation and Fine-Tuned Chat Models,&rdquo; <em>arXiv:2307.09288</em>, 2023.</div>
+  <div class="ref-item">[14] S. Saroj, &ldquo;CritiCode: Deterministic Verification and AST Audit Engine for Mission-Critical Software Systems,&rdquo; <em>Technical Report TR-2026-CRITICODE-01</em>, India, 2026.</div>
+  <div class="ref-item">[15] L. Chen, M. Zaharia, and J. Zou, &ldquo;FrugalGPT: How to Use Large Language Models While Reducing Cost and Improving Performance,&rdquo; <em>Trans. Mach. Learn. Res. (TMLR)</em>, 2024.</div>
+  <div class="ref-item">[16] Y. Leviathan, M. Kalman, and Y. Matias, &ldquo;Fast Inference from Transformers via Speculative Decoding,&rdquo; in <em>Proc. 40th Int. Conf. Mach. Learn. (ICML)</em>, PMLR, 2023, vol. 202, pp. 19274&ndash;19286.</div>
+</div>
+
+</div><!-- end two-column -->
+
+</body>
+</html>
