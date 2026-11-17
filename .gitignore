@@ -50,31 +50,8 @@ Thumbs.db
 *.env
 .env.*
 
-# Project local rules
-rule.md
-
-# Graphify tool & knowledge graphs
-graphify-out/
-update_graphify.py
-
-# Research paper assets, visual figures, and draft tables
-paper_assets/
-*generate*figure*
-*generate_paper_figures*
-figures/
-
-# Model runtime & experiment caches
-stentor_tokenmonster_runtime/
+# Build & experiment caches
 eval/*.json
 eval/*report*
-experiment_manifest.json
 *.report
 *results*
-
-
-
-
-
-# Temporary paper build previews
-paper/preview_pages/
-paper/camera_ready.html
