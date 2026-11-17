@@ -1,63 +1,43 @@
-# CoDraft+: Adaptive Shared-Draft Multi-LLM Framework for Efficient Local Deployment
+# CoDraft+: Resource-Aware Multi-Model Collaboration via a Shared Canonical Workspace
 
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
-[![Architecture: Multi-LLM](https://img.shields.io/badge/Architecture-Shared--Draft%20Multi--Agent-orange.svg)]()
-[![Hardware: Local Consumer Edge](https://img.shields.io/badge/Target-RAM%20%3C%208GB%20%7C%20CPU%2FGPU-green.svg)]()
+[![Architecture: Shared Workspace MAS](https://img.shields.io/badge/Architecture-Shared--Workspace%20MAS-orange.svg)]()
+[![Target: Edge Hardware <8GB RAM](https://img.shields.io/badge/Target-RAM%20%3C%208GB%20%7C%20CPU%2FGPU-green.svg)]()
 
-> **CoDraft+** is a resource-aware collaborative multi-LLM framework engineered for consumer-grade laptops and edge devices. Rather than generating uncoordinated parallel answers or running open-ended debates, heterogeneous small language models (e.g., **Qwen-2.5-3B** + **Gemma-3-1B**) iteratively construct, refine, and cross-verify **one single evolving answer** within a version-controlled, sectioned workspace.
+> **CoDraft+** is a resource-aware collaborative multi-LLM framework engineered for consumer-grade laptops and edge devices (<8 GB RAM). Instead of generating separate parallel responses or running verbose multi-agent debates, heterogeneous small language models iteratively build, patch, and verify **one single evolving answer** inside a versioned, section-addressed workspace.
 
 ---
 
-## Architectural Highlights
+## Architecture & Workflow
 
 ```mermaid
 flowchart TD
-    UserQuery["User Query"] --> QA["QueryAnalyzer (Complexity C & Domain)"]
-    FastPathCheck{"C < C_threshold ?"}
-    QA --> FastPathCheck
-    
-    FastPathCheck -- "Yes (Fast Path)" --> FastModel["Single Pass Draft (Model A or B)"]
-    FastModel --> Workspace["Shared Draft Workspace (SQLite WAL)"]
-    
-    FastPathCheck -- "No (Adaptive Collab)" --> Controller["Adaptive Collaboration Controller"]
-    Controller --> Router["Model Router (Qwen-3B <--> Gemma-1B)"]
-    Router --> ModelTurn["Active Model Turn (Inference via Ollama / Local Engine)"]
-    ModelTurn --> Patcher["Resilient JSON/Unified-Diff Patcher"]
-    Patcher --> Workspace
-    
-    Workspace --> Ledger["Evidence Ledger (Atomic Claim Extraction & Verification)"]
-    Ledger --> AdaptiveStop{"Adaptive Stopping Engine (Stagnation, Claims, Budget, S_t)"}
-    
-    AdaptiveStop -- "Continue" --> Controller
-    AdaptiveStop -- "Converged" --> FinalAnswer["Final Verified Answer + Telemetry & Provenance"]
+    Q["User Query (q)"] --> QA["QueryAnalyzer: Domain & Complexity C(q)"]
+    QA --> FP{"C(q) < 0.40 ?"}
+    FP -- "Yes (Fast Path)" --> Solo["Single-Turn Specialist Draft"]
+    Solo --> Store["Shared Canonical Workspace (SQLite WAL + JSONL)"]
+
+    FP -- "No (Iterative Collab)" --> Ctrl["AdaptiveController (Alternates Model A ↔ Model B)"]
+    Ctrl --> Pool["Interleaved Edge Model Pool (1 SLM Resident in RAM)"]
+    Pool --> Patch["4-Tier ResilientPatcher (JSON → Fenced → Brace/\\n → Heuristic)"]
+    Patch --> Store
+    Store --> Ledger["EvidenceLedger (Claim Extraction & Pressure V_t)"]
+    Ledger --> Stop{"Stop Gate: S_t < 0.20, V_t = 0, Stagnation, or Max Rounds?"}
+    Stop -- "Continue (Round t+1)" --> Ctrl
+    Stop -- "Converged" --> Out["OrchestrationResult (Final Answer, Claims, Telemetry)"]
 ```
 
-1. **Structured Shared Workspace**: State is organized into identifiable sections (`overview`, `technical_derivation`, `limitations`, `conclusion`). Models emit structured JSON patches rather than re-generating entire documents, reducing redundant token generation by **40–60%**.
-2. **Resilient Multi-Tier Patching**: Small 1B–3B models frequently produce imperfect JSON. CoDraft+ implements a 4-tier fallback parser (Strict JSON -> Fenced codeblock -> Outermost curly brace extraction with newline escaping -> Raw-text section updater) ensuring 0% runtime crash rates.
-3. **Decoupled Adaptive Controller**: Avoids circular dependencies in complexity/disagreement formulation. Simple queries exit on Turn 0 (Fast Path); complex queries alternate models and halt upon semantic stagnation ($\Delta_{\text{diff}} < 0.04$) or complete factual claim resolution ($V_t = 0$).
-4. **Embedded Zero-Dependency Storage**: Default storage uses embedded **SQLite in WAL mode**, eliminating mandatory Redis/PostgreSQL daemon installation on developer machines while preserving strict ACID versioning and JSONL audit logging.
-5. **Grounded Evidence Ledger**: Automatically extracts declarative atomic claims, tracks source attribution per model, and monitors verification pressure without external privacy leaks.
-6. **Hardware-Aware Memory Management**: Dynamically queries host RAM via `psutil`. On devices with $\ge 8\text{ GB}$ RAM, models remain cached with keep-alive to eliminate disk thrashing; on tight memory environments (< 8GB), models cold-swap sequentially.
+### Core Capabilities
+1. **Shared Canonical Workspace (`codraft/storage.py`)**: Organizes evolving answers into addressable Markdown sections with ACID versioning in embedded SQLite (`WAL` mode) and append-only JSONL history—keeping prompt growth linear $O(TL)$ instead of quadratic $O(KLT^2)$.
+2. **4-Tier Resilient Patcher (`codraft/patcher.py`)**: Small models frequently emit imperfect JSON. CoDraft+ applies a 4-tier recovery cascade—(1) direct `json.loads()`, (2) Markdown ```` ```json``` ```` extraction, (3) outermost `{...}` slicing with unescaped newline repair, and (4) heuristic prose fallback—achieving 0% unrecoverable patch crashes.
+3. **Multi-Signal Adaptive Controller (`codraft/controller.py`)**: Routes simple queries ($C(q) < 0.40$) to a single-turn fast path and scores multi-turn urgency via $S_t = 0.35\,C(q) + 0.25\,U_t + 0.25\,\Delta_{\text{diff}, t} + 0.15\,V_t$, halting cleanly on stagnation ($\Delta_{\text{diff}} < 0.04$), verified stability ($V_t = 0$), or convergence ($S_t < 0.20$).
+4. **Claim-Centric Evidence Ledger (`codraft/evidence.py`)**: Extracts deduplicated factual assertions, tracks per-model provenance, and computes Laplace-smoothed verification pressure $V_t$.
+5. **Pluggable Local Backends & Telemetry (`codraft/engine.py`, `codraft/profiler.py`)**: Supports `HuggingFaceEngine` (local CPU/GPU Transformers), `OllamaEngine` (local quantized edge serving with RAM keep-alive control), and `OpenAIEngine`, with live wall-clock latency, token, and peak resident RAM profiling.
 
 ---
 
-## Engineering Standards
-
-This repository adheres strictly to reproducible research standards:
-- **Zero Synthetic / Fake Data**: All model responses, metrics, and claims originate strictly from genuine forward passes on published checkpoints.
-- **Zero Ungrounded Assumptions**: Fail-closed semantics on service or connection unavailability.
-- **Modular Reproducibility**: Clean, self-documenting Python architecture with automated pytest verification (`12/12` passing).
-
-## Research Manuscript
-
-The full-length camera-ready paper is available directly in this repository:
-- **PDF:** [CoDraft_Plus_Research_Paper.pdf](CoDraft_Plus_Research_Paper.pdf)
-- **LaTeX Source:** [paper/main.tex](paper/main.tex) & [paper/references.bib](paper/references.bib)
-
----
-
-## Installation & Usage
+## Installation & Quick Start
 
 ### 1. Environment Setup
 ```bash
@@ -66,80 +46,91 @@ cd codraft-plus
 pip install -r requirements.txt
 ```
 
-### 2. Run Test Suite
+### 2. Run Unit Tests
 ```bash
 python -m pytest tests/test_codraft.py -v
 ```
+*(12/12 unit tests covering query analysis, 4-tier patching, section addressing, evidence ledger, adaptive stopping, storage, and orchestration.)*
 
-### 3. Local Model Setup (Ollama)
+### 3. CLI Execution (Ollama Local Models)
 ```bash
 ollama pull qwen2.5:3b
 ollama pull gemma3:1b
+
+# Analyze query complexity and recommended routing
+python -m codraft.cli analyze "Compare trade-offs between Kalman filters and particle filters."
+
+# Run adaptive collaborative drafting
+python -m codraft.cli ask "Compare trade-offs between Kalman filters and particle filters."
 ```
 
-### 4. CLI Execution
-```bash
-# Query analysis
-python -m codraft.cli analyze "How does optical flow odometry work in autonomous drones?"
-
-# Collaborative answering
-python -m codraft.cli ask "How does optical flow odometry work in autonomous drones?"
-```
-
-### 5. FastAPI Microservice
+### 4. FastAPI Microservice
 ```bash
 uvicorn codraft.server:app --host 0.0.0.0 --port 8000
 ```
 
 ---
 
-## Experimental Baselines & Reproduction
+## Evaluation Harness & Reproducibility
 
-CoDraft+ includes an automated evaluation harness to validate the **Equal-Compute Hypothesis** across five standard baselines:
+The `eval/` suite evaluates sub-50M open-weight checkpoints across three architectural families (**Pythia / GPT-NeoX**, **BabyLM / GPT-BERT**, and **Stentor2 / Llama**) under a standardized five-configuration protocol using genuine FP32 forward passes (zero synthetic data):
 
-| Baseline | Paradigm | Description |
+| Config | Paradigm | Description |
 | :--- | :--- | :--- |
-| **E1** | Single LLM | Single pass from primary model (Qwen-2.5-3B). |
-| **E2** | Self-Refine | Single model performs iterative self-review (2 passes). |
-| **E3** | Sequential Cascade | Model A drafts $\to$ Model B critiques $\to$ Model A revises. |
-| **E5** | Fixed Shared Draft | Alternating A/B shared draft with fixed 4 rounds (no adaptivity). |
-| **E6** | **CoDraft+ (Ours)** | Adaptive controller + structured patch + evidence ledger + early stopping. |
+| **E1** | Small A Solo | Single-turn generation by Specialist A |
+| **E2** | Small B Solo | Single-turn generation by Specialist B |
+| **E3** | Isolated Ensemble (A + B) | Parallel generation without shared-workspace communication |
+| **E4** | **CoDraft+ (Ours)** | Iterative shared-workspace patching, evidence ledger, & adaptive stopping |
+| **E5** | Large Baseline Solo | Monolithic reference checkpoint ($1.58\times$–$1.81\times$ combined parameter scale) |
 
-Run the automated evaluation:
+### Running Verification & Benchmarks
 ```bash
+# Verify local Hugging Face checkpoints and parameter scales
+python eval/verify_checkpoints.py
+
+# Run benchmark suites
 python eval/benchmark.py
+python eval/benchmark_suite.py
+python eval/run_full_validation.py
 ```
 
 ---
 
-## Directory Structure
+## Repository Structure
 
 ```text
 codraft-plus/
 ├── codraft/
-│   ├── __init__.py           # Package version and export
-│   ├── config.py             # Global settings and hyperparameter configs
-│   ├── types.py              # Pydantic schemas (Patch, DraftState, Claim, ProfilerMetrics)
-│   ├── storage.py            # SQLite WAL + In-Memory + JSONL audit storage
-│   ├── patcher.py            # 4-tier resilient JSON/markdown patch parser & section applicator
-│   ├── analyzer.py           # Domain classifier & complexity score C(q)
-│   ├── evidence.py           # Atomic claim extraction & factual ledger
-│   ├── controller.py         # Adaptive routing & multi-criteria stopping
-│   ├── engine.py             # Ollama and OpenAI-compatible LLM backends
-│   ├── profiler.py           # Memory (RSS), CPU %, latency, & energy telemetry
-│   ├── orchestrator.py       # Core async pipeline execution
-│   ├── server.py             # FastAPI REST microservice
-│   └── cli.py                # Command-line interface
+│   ├── __init__.py           # Package exports
+│   ├── analyzer.py           # Query domain classifier & complexity score C(q)
+│   ├── cli.py                # Command-line interface
+│   ├── config.py             # Runtime settings & controller hyperparameters
+│   ├── controller.py         # Multi-signal urgency S_t & adaptive stopping gates
+│   ├── engine.py             # HuggingFace, Ollama, and OpenAI-compatible engines
+│   ├── evidence.py           # Atomic claim extraction & verification pressure V_t
+│   ├── model_sets.py         # Frozen open-weight model family registry (Sets 1–3)
+│   ├── orchestrator.py       # Core async collaborative execution loop
+│   ├── patcher.py            # 4-tier resilient JSON/section patcher & diff churn
+│   ├── profiler.py           # Wall-clock latency, token, & peak RSS RAM profiler
+│   ├── server.py             # FastAPI REST service
+│   ├── storage.py            # SQLite WAL + In-Memory + JSONL state storage
+│   └── types.py              # Structured dataclasses (Patch, DraftState, Claim, Metrics)
 ├── eval/
-│   └── benchmark.py          # Benchmark suite running E1-E6 baselines
+│   ├── benchmark.py          # Core E1–E5 benchmark runner
+│   ├── benchmark_suite.py    # Multi-track & cross-architecture evaluation suite
+│   ├── metrics.py            # Token F1, ROUGE-L, BLEU-1, & statistical CI utilities
+│   ├── run_full_validation.py# End-to-end validation harness (Gates G1–G10)
+│   └── verify_checkpoints.py # Offline checkpoint & parameter verification
 ├── tests/
-│   └── test_codraft.py       # Full pytest suite
-├── .gitignore                # Git ignore rules for clean repository hygiene
-├── requirements.txt          # Python dependencies
-└── README.md                 # System overview and usage instructions
+│   └── test_codraft.py       # Automated pytest unit test suite (12/12 passing)
+├── .gitignore
+├── LICENSE                   # Apache License 2.0
+├── README.md
+└── requirements.txt
 ```
 
 ---
 
 ## License
-Licensed under the Apache License, Version 2.0.
+
+Licensed under the **Apache License, Version 2.0**. See [LICENSE](LICENSE) for full terms.
